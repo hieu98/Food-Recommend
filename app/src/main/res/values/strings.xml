@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Food Recommend</string>
+    <string name="home">Home</string>
+    <string name="add">Add</string>
+    <string name="user">User</string>
+    <string name="search">Search</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_cong_thuc">ActivityCongThuc</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="profile">Profile</string>
+    <string name="save">Save</string>
+</resources>
