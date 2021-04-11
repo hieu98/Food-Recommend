@@ -16,12 +16,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen">
-        <activity android:name=".LoginActivity" />
-        <activity
-            android:name=".CongThucActivity">
+        android:theme="@style/Theme.FoodRecommend.Fullscreen">
+        <activity android:name=".RegisterActivity"
+            android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen"/>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".CongThucActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
