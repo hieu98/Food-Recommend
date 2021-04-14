@@ -42,6 +42,12 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="logoutButton" parent="viewParent">
+        <item name="android:background">@drawable/background_button</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="spinnerHintText" parent="parent">
         <item name="android:textSize">@dimen/newsMoreTextSize</item>
         <item name="android:textColor">@color/colorAccent</item>

@@ -1,15 +1,20 @@
 package com.example.foodrecommend
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import com.example.foodrecommend.fragment.AddFragment
 import com.example.foodrecommend.fragment.HomeFragment
 import com.example.foodrecommend.fragment.SearchFragment
 import com.example.foodrecommend.fragment.UserFragment
+import com.google.firebase.auth.FirebaseAuth
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var mAuth : FirebaseAuth
     private val fragment1: Fragment = HomeFragment()
     private val fragment2: Fragment = AddFragment()
     private val fragment3: Fragment = UserFragment()
@@ -19,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mAuth = FirebaseAuth.getInstance()
+        val user = mAuth.currentUser
+
         val menu = findViewById<ChipNavigationBar>(R.id.menu_bottom)
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment4, "4").commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment3, "3").commit()
@@ -48,6 +56,16 @@ class MainActivity : AppCompatActivity() {
                     active = fragment3
                 }
             }
+        }
+
+
+        val checkLoginGG = intent.getBooleanExtra("login google",false)
+        if (checkLoginGG){
+//            supportFragmentManager.beginTransaction().hide(active).detach(fragment3).attach(fragment3).show(fragment3).commit()
+//            active = fragment3
+            val bundle = Bundle()
+            bundle.putString("login google","login google")
+            fragment3.arguments = bundle
         }
 
     }

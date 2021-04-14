@@ -14,8 +14,8 @@
     <string name="nguyen_lieu">Nguyên Liệu</string>
     <string name="cach_lam">Cách Làm</string>
     <string name="GT_monan">Giới thiệu món ăn</string>
-    <string name="them_buoc"> >> Thêm bước</string>
-    <string name="them_nguyen_lieu"> >> Thêm Nguyên Liệu</string>
+    <string name="them_buoc">Thêm bước</string>
+    <string name="them_nguyen_lieu">Thêm Nguyên Liệu</string>
     <string name="them_anh">Thêm Ảnh</string>
     <string name="huy">Hủy</string>
     <string name="goi_y">Gợi ý về món ăn</string>
@@ -33,4 +33,5 @@
 
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Password</string>
+    <!--    <string name="default_web_client_id">Default</string>-->
 </resources>

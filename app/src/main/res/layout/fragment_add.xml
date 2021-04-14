@@ -24,7 +24,7 @@
                     android:layout_gravity="center"
                     android:id="@+id/imgv_monan"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"/>
+                    android:layout_height="200dp"/>
                 <Button
                     android:text="@string/them_anh"
                     android:layout_centerInParent="true"
@@ -49,30 +49,17 @@
                         android:text="@string/nguyen_lieu"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"/>
-                    <LinearLayout
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal"
+                    <ListView
+                        android:id="@+id/list_nguyenlieu"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
-                            android:includeFontPadding="false"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:layout_marginStart="15dp"
-                            android:layout_marginEnd="15dp"
-                            android:background="@drawable/rounded_edittext"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                    <TextView
+                        android:layout_height="wrap_content"/>
+                    <Button
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="15dp"
                         android:text="@string/them_nguyen_lieu"
                         android:textColor="@color/black"
                         android:id="@+id/txtMoreNguyenlieu"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
                 <LinearLayout
@@ -88,46 +75,17 @@
                         android:text="@string/cach_lam"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"/>
-                    <LinearLayout
-                        android:orientation="horizontal"
+                    <ListView
+                        android:id="@+id/list_cachlam"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_marginStart="5dp"
-                            android:id="@+id/txtSTT_cachlam"
-                            android:text="1"
-                            android:includeFontPadding="false"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:background="@drawable/tags_background"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <EditText
-                            android:includeFontPadding="false"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="15dp"
-                            android:background="@drawable/rounded_edittext"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_add"
-                        android:layout_marginLeft="30dp"/>
-                    <TextView
+                        android:layout_height="wrap_content"/>
+                    <Button
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="15dp"
                         android:text="@string/them_buoc"
                         android:textColor="@color/black"
                         android:id="@+id/txtMoreCachlam"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
                 <LinearLayout

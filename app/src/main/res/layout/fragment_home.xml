@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue"
+        android:background="@drawable/backrao"
         android:orientation="vertical">
         <androidx.cardview.widget.CardView
             android:layout_marginTop="20dp"
@@ -22,7 +22,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/border">
+                android:background="@color/whiteTextColor">
                 <TextView
                     android:id="@+id/tv_tg"
                     android:gravity="center"
@@ -49,7 +49,6 @@
                     app:layout_constraintTop_toTopOf="parent"/>
                 <ImageView
                     android:src="@drawable/ic_baseline_wb_sunny_24"
-
                     android:id="@+id/imgv_tg"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -96,10 +95,11 @@
                     app:layout_constraintEnd_toEndOf="@+id/tv_tt"
                     app:layout_constraintStart_toStartOf="@+id/tv_tt"/>
                 <TextView
+                    android:id="@+id/txt_thoigian"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:textSize="15sp"
-                    android:text="Đêm"
+                    android:text="Sáng"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/imgv_tg"
@@ -107,6 +107,7 @@
                     app:layout_constraintEnd_toEndOf="@+id/imgv_tg"
                     app:layout_constraintStart_toStartOf="@+id/imgv_tg"/>
                 <TextView
+                    android:id="@+id/txt_thoitiet"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:textSize="15sp"
@@ -128,10 +129,10 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:text="Ăn gì bây giờ ?"/>
-        <androidx.recyclerview.widget.RecyclerView
+        <ListView
             android:id="@+id/recyclerviewhome"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop ="7dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
