@@ -11,6 +11,7 @@ import com.example.foodrecommend.fragment.SearchFragment
 import com.example.foodrecommend.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
+import kotlinx.android.synthetic.main.fragment_add.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -61,8 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         val checkLoginGG = intent.getBooleanExtra("login google",false)
         if (checkLoginGG){
-//            supportFragmentManager.beginTransaction().hide(active).detach(fragment3).attach(fragment3).show(fragment3).commit()
-//            active = fragment3
             val bundle = Bundle()
             bundle.putString("login google","login google")
             fragment3.arguments = bundle

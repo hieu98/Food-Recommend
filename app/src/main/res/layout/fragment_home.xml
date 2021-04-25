@@ -130,6 +130,7 @@
             android:layout_marginRight="30dp"
             android:text="Ăn gì bây giờ ?"/>
         <ListView
+            android:dividerHeight="7dp"
             android:id="@+id/recyclerviewhome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

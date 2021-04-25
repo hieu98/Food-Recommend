@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="10dp">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_centerVertical="true"
+                android:id="@+id/imgv_dsct"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="3dp"
+                android:background="#FFFFFF" />
+            <View
+                android:layout_width="0.5dp"
+                android:layout_height="100dp"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/imgv_dsct"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="3dp"
+                android:background="@color/colorPrimaryDark"/>
+            <TextView
+                android:id="@+id/txttenmon_dsct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginEnd="10dp"
+                android:layout_toEndOf="@+id/imgv_dsct"
+                android:text="Tên Món Ăn trong danh sách"
+                android:textColor="#1080D6"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txttenmon_dsct"
+                android:layout_alignStart="@+id/txttenmon_dsct"
+                android:layout_marginBottom="2dp"
+                android:text="Người Đăng: "
+                android:textColor="#D6B70E"
+                android:textSize="13sp" />
+            <TextView
+                android:id="@+id/txtnguoidang_dsct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txttenmon_dsct"
+                android:layout_toEndOf="@+id/tv2"
+                android:layout_marginEnd="7dp"
+                android:text="day la nguoi dang"
+                android:textColor="#000000"
+                android:textSize="13sp" />
+            <RatingBar
+                android:theme="@style/RatingBar"
+                android:id="@+id/rate"
+                style="?android:attr/ratingBarStyleIndicator"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/txtnguoidang_dsct"
+                android:layout_alignStart="@+id/txttenmon_dsct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

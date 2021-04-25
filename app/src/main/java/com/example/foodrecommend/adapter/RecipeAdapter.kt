@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.data.RecycleviewData
@@ -25,18 +26,20 @@ class RecipeAdapter (var context: Context, var list: List<RecycleviewData>) : Ba
     }
 
     override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
-        val view = View.inflate(context,R.layout.item_danhsachmon,null)
+        val view = View.inflate(context,R.layout.item_danhsachmon_new,null)
         val item :RecycleviewData = list[p0]
         val img : ImageView = view.findViewById(R.id.imgv_dsct)
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
-        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
-        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
+        val rate = view.findViewById<RatingBar>(R.id.rate)
+//        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
+//        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
 
         tenmon.text = item.ten
         nguoidang.text = item.nguoidang
-        thoigian.text = item.thoigian
-        thoitiet.text = item.thoitiet
+        rate.rating = item.rate
+//        thoigian.text = item.thoigian
+//        thoitiet.text = item.thoitiet
         Picasso.get().load(item.image).resize(100, 100).into(img)
 
         return view

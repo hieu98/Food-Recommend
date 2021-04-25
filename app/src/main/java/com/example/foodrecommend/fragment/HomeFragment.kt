@@ -38,7 +38,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val time = view.findViewById<TextView>(R.id.tv_tg)
         val temperature = view.findViewById<TextView>(R.id.tv_tt)
@@ -86,10 +86,10 @@ class HomeFragment : Fragment(), AdapterView.OnItemClickListener {
         val list = ArrayList<RecycleviewData>()
         val item1 = RecycleviewData(R.drawable.comtam, "Cơm tấm sườn bì","Đây là món ăn " +
                 ".......................................................................................",
-                "Trần Năng Hiếu","Sáng","Lạnh")
+                "Trần Năng Hiếu","Sáng","Lạnh",0.0f)
         val item2 = RecycleviewData(R.drawable.comtam, "Cơm tấm sườn không bì","Đây là món ăn " +
                 ".......................................................................................",
-            "Trần Năng Hiếu","Sáng","Lạnh")
+            "Trần Năng Hiếu","Sáng","Lạnh",3.5f)
         list += item1
         list += item2
         return list
@@ -106,6 +106,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemClickListener {
         val item :RecycleviewData = listdata[position]
         val intent = Intent(context,CongThucActivity::class.java)
         intent.putExtra("ten mon",item.ten)
+        intent.putExtra("rating",item.rate)
         startActivity(intent)
     }
 

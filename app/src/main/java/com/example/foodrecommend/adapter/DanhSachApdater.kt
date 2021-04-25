@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
@@ -14,7 +15,7 @@ class DanhSachApdater(private val list: List<RecycleviewData>,
                       private val listener: OnItemClickListener) : RecyclerView.Adapter<DanhSachApdater.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DanhSachApdater.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
         return ViewHolder(view)
     }
 
@@ -24,8 +25,9 @@ class DanhSachApdater(private val list: List<RecycleviewData>,
 //        holder.img.setImageResource(item.image)
         holder.tenmon.text = item.ten
         holder.nguoidang.text = item.nguoidang
-        holder.thoigian.text = item.thoigian
-        holder.thoitiet.text = item.thoitiet
+        holder.rate.rating = item.rate
+//        holder.thoigian.text = item.thoigian
+//        holder.thoitiet.text = item.thoitiet
 
     }
 
@@ -35,8 +37,9 @@ class DanhSachApdater(private val list: List<RecycleviewData>,
         val img : ImageView = view.findViewById(R.id.imgv_dsct)
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
-        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
-        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
+        val rate = view.findViewById<RatingBar>(R.id.rate)
+//        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
+//        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
         init {
             view.setOnClickListener(this)
         }

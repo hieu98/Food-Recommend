@@ -54,4 +54,8 @@
         <item name="android:paddingLeft">5dp</item>
     </style>
 
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#d3d3d3</item>
+        <item name="colorControlActivated">#FFD310</item>
+    </style>
 </resources>
