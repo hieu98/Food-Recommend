@@ -1,15 +1,12 @@
-package com.example.foodrecommend
+package com.example.foodrecommend.activity
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.Window
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.foodrecommend.R
 import kotlinx.android.synthetic.main.activity_cong_thuc.*
 
 class CongThucActivity : AppCompatActivity() {

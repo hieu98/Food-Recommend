@@ -1,9 +1,10 @@
-package com.example.foodrecommend
+package com.example.foodrecommend.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import com.example.foodrecommend.R
 import com.google.firebase.auth.FirebaseAuth
 
 class LoadingActivity : AppCompatActivity() {
@@ -23,7 +24,7 @@ class LoadingActivity : AppCompatActivity() {
                 startActivity(signInIntent)
                 finish()
             }else{
-                val userIntent = Intent(this,MainActivity::class.java)
+                val userIntent = Intent(this, MainActivity::class.java)
                 val a = intent.getBooleanExtra("loginGG",false)
                 if(a){
                     userIntent.putExtra("login google",true)

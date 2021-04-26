@@ -1,4 +1,4 @@
-package com.example.foodrecommend
+package com.example.foodrecommend.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.ScrollView
 import android.widget.Toast
+import com.example.foodrecommend.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -65,8 +66,8 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     fun onLoginClick(view : View){
-        val intent = Intent(this,LoginActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
-        overridePendingTransition(R.anim.slide_in_left,R.anim.stay)
+        overridePendingTransition(R.anim.slide_in_left, R.anim.stay)
     }
 }

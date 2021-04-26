@@ -8,14 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-import com.example.foodrecommend.LoadingActivity
+import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.activity_register.*
-import kotlinx.android.synthetic.main.fragment_user.*
 
 class UserFragment : Fragment() {
 
@@ -66,7 +64,7 @@ class UserFragment : Fragment() {
 
         btn.setOnClickListener {
             mAuth.signOut()
-            val intent = Intent(context,LoadingActivity::class.java)
+            val intent = Intent(context, LoadingActivity::class.java)
             startActivity(intent)
         }
 

@@ -6,19 +6,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.foodrecommend.CongThucActivity
+import com.example.foodrecommend.activity.CongThucActivity
 import com.example.foodrecommend.R
-import com.example.foodrecommend.adapter.DanhSachApdater
 import com.example.foodrecommend.adapter.RecipeAdapter
 import com.example.foodrecommend.data.RecycleviewData
 import com.squareup.picasso.Picasso
@@ -104,7 +99,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val item :RecycleviewData = listdata[position]
-        val intent = Intent(context,CongThucActivity::class.java)
+        val intent = Intent(context, CongThucActivity::class.java)
         intent.putExtra("ten mon",item.ten)
         intent.putExtra("rating",item.rate)
         startActivity(intent)

@@ -1,7 +1,8 @@
-package com.example.foodrecommend
+package com.example.foodrecommend.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.foodrecommend.R
 
 class ListRecipeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

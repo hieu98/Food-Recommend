@@ -1,17 +1,15 @@
-package com.example.foodrecommend
+package com.example.foodrecommend.activity
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import androidx.fragment.app.Fragment
+import com.example.foodrecommend.R
 import com.example.foodrecommend.fragment.AddFragment
 import com.example.foodrecommend.fragment.HomeFragment
 import com.example.foodrecommend.fragment.SearchFragment
 import com.example.foodrecommend.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
-import kotlinx.android.synthetic.main.fragment_add.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
                     active = fragment1
                 }
-                R.id.search-> {
+                R.id.search -> {
                     supportFragmentManager.beginTransaction().hide(active).detach(fragment4).attach(fragment4).show(fragment4).commit()
                     active = fragment4
                 }

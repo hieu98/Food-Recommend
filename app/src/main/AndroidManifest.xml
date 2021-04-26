@@ -17,24 +17,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodRecommend.Fullscreen">
-        <activity android:name=".MainActivity2"></activity>
-        <activity android:name=".ListRecipeActivity" />
+        <activity android:name=".activity.ListRecipeActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activity.RegisterActivity"
             android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen" />
-        <activity android:name=".CongThucActivity">
+        <activity android:name=".activity.CongThucActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activity.MainActivity" />
         </activity>
         <activity
-            android:name=".LoadingActivity"
+            android:name=".activity.LoadingActivity"
             android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

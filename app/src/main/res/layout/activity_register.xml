@@ -9,7 +9,7 @@
     android:background="@color/register_bk_color"
     android:focusableInTouchMode="true"
     android:gravity="center"
-    tools:context=".RegisterActivity">
+    tools:context=".activity.RegisterActivity">
     <ScrollView
         android:id="@+id/srclv"
         android:layout_width="match_parent"

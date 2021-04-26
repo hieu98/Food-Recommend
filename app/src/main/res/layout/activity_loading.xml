@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#A3EA86"
-    tools:context=".LoadingActivity">
+    tools:context=".activity.LoadingActivity">
     <ImageView
         android:id="@+id/imgloading"
         android:layout_centerHorizontal="true"
