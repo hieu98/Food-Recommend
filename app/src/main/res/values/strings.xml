@@ -35,5 +35,8 @@
     <string name="login_password_hint">Password</string>
     <string name="x_a">Xóa</string>
     <string name="ten">Tên món ăn</string>
+    <string name="hint_giaithichmonan">Đây là giới thiệu về món ăn</string>
+    <string name="an_gi">Ăn gì bây giờ ?</string>
+    <string name="mon_moi">Món ăn mới</string>
     <!--    <string name="default_web_client_id">Default</string>-->
 </resources>

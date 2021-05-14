@@ -5,9 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.CongThucActivity"
-    android:orientation="vertical">
-    <ScrollView
+    tools:context=".activity.CongThucActivity">
+    <androidx.core.widget.NestedScrollView
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
@@ -21,8 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp">
                 <ImageView
-                    android:background="@color/blue"
-                    android:id="@+id/imgv_monan"
+                    android:id="@+id/imgv_anhbiamonan"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"/>
                 <RatingBar
@@ -49,14 +47,15 @@
                     <TextView
                         android:textSize="16sp"
                         android:textColor="@color/blue"
-                        android:id="@+id/txtGTmonan"
+
                         android:text="@string/GT_monan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"/>
                     <TextView
+                        android:id="@+id/txtGTmonan"
                         android:layout_margin="15dp"
-                        android:hint="Đây là giới thiệu về món ăn"
+                        android:hint="@string/hint_giaithichmonan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
@@ -71,32 +70,33 @@
                         android:text="@string/nguyen_lieu"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"/>
-                    <ListView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/lv_nguyenlieu"
                         android:layout_margin="15dp"
                         android:dividerHeight="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
+
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_marginStart="15dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
+                        android:layout_marginStart="15dp"
                         android:textSize="16sp"
                         android:textColor="@color/blue"
                         android:text="@string/cach_lam"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"/>
-                    <ListView
-                        android:layout_marginStart="15dp"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_margin="15dp"
                         android:id="@+id/lv_cachlam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </RelativeLayout>
 

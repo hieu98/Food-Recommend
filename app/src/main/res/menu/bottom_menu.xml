@@ -7,11 +7,11 @@
         android:icon="@drawable/ic_home"
         android:title="@string/home"
         app:cnb_iconColor="@color/home" />
-    <item
-        android:id="@+id/search"
-        android:icon="@drawable/ic_search"
-        android:title="@string/search"
-        app:cnb_iconColor="@color/search" />
+<!--    <item-->
+<!--        android:id="@+id/search"-->
+<!--        android:icon="@drawable/ic_search"-->
+<!--        android:title="@string/search"-->
+<!--        app:cnb_iconColor="@color/search" />-->
     <item
         android:id="@+id/add"
         android:icon="@drawable/ic_add"

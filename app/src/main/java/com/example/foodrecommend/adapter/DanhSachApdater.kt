@@ -1,18 +1,24 @@
 package com.example.foodrecommend.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
-import com.example.foodrecommend.data.RecycleviewData
+import com.example.foodrecommend.data.CongThuc
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 
-class DanhSachApdater(private val list: List<RecycleviewData>,
-                      private val listener: OnItemClickListener) : RecyclerView.Adapter<DanhSachApdater.ViewHolder>(){
+class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThuc>,var context: Context) : RecyclerView.Adapter<DanhSachApdater.ViewHolder>(){
+
+    private var storage : FirebaseStorage?= null
+    private var storageReference : StorageReference?= null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DanhSachApdater.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
@@ -21,14 +27,27 @@ class DanhSachApdater(private val list: List<RecycleviewData>,
 
     override fun onBindViewHolder(holder: DanhSachApdater.ViewHolder, position: Int) {
         val item = list[position]
-        Picasso.get().load(item.image).resize(100, 100).into(holder.img);
-//        holder.img.setImageResource(item.image)
+        Picasso.get().load(item.image).resize(100,100).into(holder.img)
         holder.tenmon.text = item.ten
         holder.nguoidang.text = item.nguoidang
-        holder.rate.rating = item.rate
+        val rating = item.rate
+        if (rating != null){
+            holder.rate.rating = rating
+        }else {
+            holder.rate.rating = 0.0f
+        }
+
 //        holder.thoigian.text = item.thoigian
 //        holder.thoitiet.text = item.thoitiet
 
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
     override fun getItemCount() = list.size
@@ -38,8 +57,6 @@ class DanhSachApdater(private val list: List<RecycleviewData>,
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
         val rate = view.findViewById<RatingBar>(R.id.rate)
-//        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
-//        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
         init {
             view.setOnClickListener(this)
         }
@@ -50,6 +67,8 @@ class DanhSachApdater(private val list: List<RecycleviewData>,
                 listener.OnItemClick(position)
             }
         }
+//        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
+//        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
     }
     interface OnItemClickListener{
         fun OnItemClick(position: Int)

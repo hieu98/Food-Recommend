@@ -42,10 +42,10 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
                     active = fragment1
                 }
-                R.id.search -> {
-                    supportFragmentManager.beginTransaction().hide(active).detach(fragment4).attach(fragment4).show(fragment4).commit()
-                    active = fragment4
-                }
+//                R.id.search -> {
+//                    supportFragmentManager.beginTransaction().hide(active).detach(fragment4).attach(fragment4).show(fragment4).commit()
+//                    active = fragment4
+//                }
                 R.id.add -> {
                     supportFragmentManager.beginTransaction().hide(active).detach(fragment2).attach(fragment2).show(fragment2).commit()
                     active = fragment2

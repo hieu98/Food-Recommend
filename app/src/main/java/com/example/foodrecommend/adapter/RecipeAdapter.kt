@@ -1,7 +1,6 @@
 package com.example.foodrecommend.adapter
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -9,10 +8,10 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import com.example.foodrecommend.R
-import com.example.foodrecommend.data.RecycleviewData
+import com.example.foodrecommend.data.CongThuc
 import com.squareup.picasso.Picasso
 
-class RecipeAdapter (var context: Context, var list: List<RecycleviewData>) : BaseAdapter(){
+class RecipeAdapter (var context: Context, var list: List<CongThuc>) : BaseAdapter(){
     override fun getItem(p0: Int): Any {
         return list.get(p0)
     }
@@ -27,7 +26,7 @@ class RecipeAdapter (var context: Context, var list: List<RecycleviewData>) : Ba
 
     override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
         val view = View.inflate(context,R.layout.item_danhsachmon_new,null)
-        val item :RecycleviewData = list[p0]
+        val item :CongThuc = list[p0]
         val img : ImageView = view.findViewById(R.id.imgv_dsct)
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
@@ -37,10 +36,10 @@ class RecipeAdapter (var context: Context, var list: List<RecycleviewData>) : Ba
 
         tenmon.text = item.ten
         nguoidang.text = item.nguoidang
-        rate.rating = item.rate
+//        rate.rating = item.rate
 //        thoigian.text = item.thoigian
 //        thoitiet.text = item.thoitiet
-        Picasso.get().load(item.image).resize(100, 100).into(img)
+        Picasso.get().load(item.image).fit().centerCrop().into(img)
 
         return view
     }

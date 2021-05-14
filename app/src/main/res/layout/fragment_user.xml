@@ -21,7 +21,7 @@
         android:scaleType="centerCrop"/>
     <TextView
         android:id="@+id/name"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:textSize="20sp"
         style="@style/viewParent"
         android:layout_gravity="center"
@@ -29,10 +29,17 @@
     <TextView
         android:id="@+id/email"
         android:textSize="20sp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         style="@style/viewParent"
         android:layout_gravity="center"
         android:text="Email"/>
+    <Button
+        android:id="@+id/your_monan"
+        android:layout_marginTop="40dp"
+        android:text="Các món ăn của bạn"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
         android:id="@+id/logout_btn"
         style="@style/logoutButton"

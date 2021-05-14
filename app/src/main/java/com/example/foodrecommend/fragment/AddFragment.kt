@@ -2,59 +2,83 @@ package com.example.foodrecommend.fragment
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
-import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.foodrecommend.R
+import com.example.foodrecommend.activity.MainActivity
 import com.example.foodrecommend.data.CachLam
+import com.example.foodrecommend.data.CongThuc
+import com.example.foodrecommend.data.Image
 import com.example.foodrecommend.data.NguyenLieu
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
-
+import java.lang.Exception
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class AddFragment : Fragment() {
 
     private lateinit var mAuth : FirebaseAuth
-    var databaseReference : DatabaseReference?= null
-    var database : FirebaseDatabase?= null
+    private var databaseReference : DatabaseReference?= null
+    private var database : FirebaseDatabase?= null
+    private var storage : FirebaseStorage ?= null
+    private var storageReference : StorageReference ?= null
 
-    lateinit var img1 :ImageView
-    lateinit var img2 :ImageView
-    lateinit var imgage :ImageView
-    var a = 1
+    private lateinit var img1 :ImageView
+    private lateinit var img2 :ImageView
+    private lateinit var imgage :ImageView
+    private var a = 1
+    private var uri : Uri ?= null
+    private var anhbia : Uri ?= null
 
-    val cachlamList :ArrayList<CachLam> = ArrayList()
-    val nguyenlieuList : ArrayList<NguyenLieu> = ArrayList()
-    var themnguyenlieu :Boolean = false
-    var themcachlam :Boolean = false
-    private lateinit var tenmonan :String
+    private val imageList :ArrayList<Uri>  = ArrayList()
+    private val cachlamList :ArrayList<CachLam> = ArrayList()
+    private val nguyenlieuList : ArrayList<NguyenLieu> = ArrayList()
+    private var themnguyenlieu :Boolean = false
+    private var themcachlam :Boolean = false
+    private var tenmonan :String = ""
+    private var gioithieumonan :String = ""
+    private var nguoidangmonan :String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_add, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_new, container, false)
 
         mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
-        databaseReference = database?.reference!!.child("profile")
+        storage = FirebaseStorage.getInstance()
+        storageReference = storage!!.reference
+        databaseReference = database?.reference
 
         val scrollview = view.findViewById<ScrollView>(R.id.scroll)
         scrollview.isVerticalScrollBarEnabled = false
@@ -62,6 +86,7 @@ class AddFragment : Fragment() {
         val parentLayout = view.findViewById<LinearLayout>(R.id.linearlayout)
         val parentLayout2 = view.findViewById<LinearLayout>(R.id.linearlayout2)
         val edt_tenmonan = view.findViewById<EditText>(R.id.edt_tenmonan)
+        val edt_gioithieumonan = view.findViewById<EditText>(R.id.edt_gioithieu)
         val edt_nguyenlieu =  view.findViewById<EditText>(R.id.edt_nguyenlieu)
         val edt_soluong =  view.findViewById<EditText>(R.id.edt_soluong)
         val edt_cachlam =  view.findViewById<EditText>(R.id.edt_cachlam)
@@ -71,6 +96,16 @@ class AddFragment : Fragment() {
         val btnhoantat = view.findViewById<Button>(R.id.btn_hoantat)
         img1 = view.findViewById(R.id.img_add_cachlam)
         imgage = view.findViewById(R.id.imgv_monan)
+
+        val user = mAuth.currentUser
+        val userref = databaseReference?.child("profile")?.child(user?.uid!!)
+        userref?.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                nguoidangmonan = snapshot.child("name").value.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
 
         btnanh.setOnClickListener {
             openImageGallery(1000)
@@ -98,40 +133,50 @@ class AddFragment : Fragment() {
         btnhoantat.setOnClickListener {
             nguyenlieuList.clear()
             cachlamList.clear()
+            // thêm tên món
             if (edt_tenmonan.text.toString().equals("")){
                 edt_tenmonan.error = "Thêm Tên món ăn"
             }else{
                 tenmonan = edt_tenmonan.text.toString()
             }
+            // thêm giới thiệu món ăn
+            if (edt_gioithieumonan.text.toString().equals("")){
+                edt_gioithieumonan.error = "Thêm Tên món ăn"
+            }else{
+                gioithieumonan = edt_gioithieumonan.text.toString()
+            }
+            // thêm nguyên liệu default
             if (edt_nguyenlieu.text.toString().equals("")){
-                Toast.makeText(context,"Thêm Nguyên Liệu",Toast.LENGTH_LONG).show()
                 edt_nguyenlieu.error = "Thêm Nguyên Liệu"
             }else if (edt_soluong.text.toString().equals("")){
-                Toast.makeText(context,"Thêm Số Lượng của Nguyên Liệu",Toast.LENGTH_LONG).show()
                 edt_soluong.error = "Thêm Số Lượng của Nguyên Liệu"
             }else{
                 val nguyenLieualway = NguyenLieu(edt_nguyenlieu.text.toString(),edt_soluong.text.toString())
                 nguyenlieuList.add(0,nguyenLieualway)
             }
-
+            // thêm nguyên liệu new
+            if(themnguyenlieu){
+                themNguyenLieu(parentLayout)
+            }
+            // thêm cách làm default
             if (edt_cachlam.text.toString().equals("")){
-                Toast.makeText(context,"Thêm Cách Làm",Toast.LENGTH_LONG).show()
                 edt_cachlam.error = "Thêm Cách Làm"
             }else{
                 val cachLamalway = CachLam("1",edt_cachlam.text.toString(),null)
                 cachlamList.add(0,cachLamalway)
             }
-            if(themnguyenlieu){
-                themNguyenLieu(parentLayout)
-            }
+            // thêm cách làm new
             if (themcachlam){
                 themCachLam(parentLayout2)
             }
-            Log.v("tenmonan", tenmonan)
-            Log.v("nguyenlieu",nguyenlieuList.toString())
-            Log.v("cachlam",cachlamList.toString())
+            if (cachlamList.size > 2){
+                cachlamList.removeAt(1)
+            }
+            uploadCongThuc(cachlamList,nguyenlieuList,tenmonan,gioithieumonan,nguoidangmonan)
 
-            
+            val intent = Intent(context,MainActivity::class.java)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
 
         }
 
@@ -174,17 +219,17 @@ class AddFragment : Fragment() {
     private fun themNguyenLieu(parentLayout: LinearLayout){
         for (i in 2 until parentLayout.childCount-1){
             val rowview = parentLayout.getChildAt(i)
-            val edtextNguyenLieu = rowview.findViewById<EditText>(R.id.edtext_nguyenlieu)
-            val edittextSoLuong = rowview.findViewById<EditText>(R.id.edtext_soluong)
+            val edtextNguyenLieu = rowview?.findViewById<EditText>(R.id.edtext_nguyenlieu)
+            val edittextSoLuong = rowview?.findViewById<EditText>(R.id.edtext_soluong)
 
-            if (edtextNguyenLieu.text.toString().equals("")){
-                edtextNguyenLieu.error = "Thêm Nguyên Liệu"
+            if (edtextNguyenLieu?.text.toString().equals("")){
+                edtextNguyenLieu?.error = "Thêm Nguyên Liệu"
                 break
-            }else if (edittextSoLuong.text.toString().equals("")){
-                edittextSoLuong.error = "Thêm Số Lượng của Nguyên Liệu"
+            }else if (edittextSoLuong?.text.toString().equals("")){
+                edittextSoLuong?.error = "Thêm Số Lượng của Nguyên Liệu"
                 break
             }else{
-                val nguyenLieu = NguyenLieu(edtextNguyenLieu.text.toString(),edittextSoLuong.text.toString())
+                val nguyenLieu = NguyenLieu(edtextNguyenLieu?.text.toString(),edittextSoLuong?.text.toString())
                 nguyenlieuList.add(i-1 ,nguyenLieu)
             }
         }
@@ -193,14 +238,14 @@ class AddFragment : Fragment() {
     private fun themCachLam(parentLayout2: LinearLayout){
         for (i in 2 until parentLayout2.childCount-1){
             val rowview2 = parentLayout2.getChildAt(i)
-            val edtextCachLam = rowview2.findViewById<EditText>(R.id.edtext_cachlam)
-            val txtSL = rowview2.findViewById<TextView>(R.id.txtSTT)
+            val edtextCachLam = rowview2?.findViewById<EditText>(R.id.edtext_cachlam)
+            val txtSL = rowview2?.findViewById<TextView>(R.id.txtSTT)
 
-            if (edtextCachLam.text.toString().equals("")){
-                edtextCachLam.error = "Thêm Cách Làm bước "+ (i-1)
+            if (edtextCachLam?.text.toString().equals("")){
+                edtextCachLam?.error = "Thêm Cách Làm bước "+ (i-1)
                 break
             }else{
-                val cachlam = CachLam(txtSL.text.toString(),edtextCachLam.text.toString(),null)
+                val cachlam = CachLam(txtSL?.text.toString(),edtextCachLam?.text.toString(),null)
                 cachlamList.add(i-1 ,cachlam)
             }
         }
@@ -230,18 +275,90 @@ class AddFragment : Fragment() {
                 }).check()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun uploadCongThuc(cachlamList : ArrayList<CachLam>, nguyenlieuList : ArrayList<NguyenLieu>, ten :String?, gioithieu:String?,nguoidang :String?){
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val formatted = current.format(formatter)
+        val calendar = Calendar.getInstance()
+        val cur = databaseReference?.child("Công Thức")?.child(ten!!)
+        cur?.child("Giới thiệu món ăn")?.setValue(gioithieu!!)
+        cur?.child("Ngày đăng")?.setValue(formatted)
+        cur?.child("Người đăng")?.setValue(nguoidang)
+        cur?.child("Tên Món Ăn")?.setValue(ten)
+        cur?.child("ItemId")?.setValue(calendar.timeInMillis)
+        var a :String
+        if (uri != null) {
+            for (i in 0 until imageList.size) {
+                val ref = storageReference?.child("Ảnh các bước")?.child(ten!!)?.child("Bước " + (i+1).toString())
+                ref?.putFile(imageList[i])
+                        ?.addOnFailureListener {
+
+                        }
+                        ?.addOnSuccessListener {
+//                            saveUrlToUser(po.storage.downloadUrl.toString())
+                            ref.downloadUrl.addOnSuccessListener {
+                                a = it.toString()
+                                cachlamList[i].imageBuoc = a
+                                cur?.child("Cách Làm")?.child(i.toString())?.setValue(cachlamList[i])
+                                Log.v("listcachlam",cachlamList[i].toString())
+                            }
+                        }
+                        ?.addOnProgressListener {
+
+                        }
+            }
+            val reff = storageReference?.child("Ảnh bìa")?.child(ten!!)
+            if (anhbia != null){
+                reff?.putFile(anhbia!!)
+                        ?.addOnFailureListener {
+
+                        }
+                        ?.addOnSuccessListener {
+                            reff.downloadUrl.addOnSuccessListener {
+                                a = it.toString()
+                                cur?.child("Ảnh bìa")?.setValue(a)
+                            }
+//
+                        }
+                        ?.addOnProgressListener {
+                        }
+            }else {
+                val builder = AlertDialog.Builder(context)
+                builder.setTitle("Image")
+                builder.setMessage("Thêm ảnh đại diện cho món ăn")
+                builder.setNegativeButton("Ok",{ dialogInterface: DialogInterface, i:Int ->   })
+                builder.show()
+            }
+        }
+        for (i in 0 until nguyenlieuList.size){
+            cur?.child("Nguyên Liệu")?.child(i.toString())?.setValue(nguyenlieuList[i])
+        }
+    }
+
+//    private fun saveUrlToUser(uri :String){
+//        val userId = mAuth.currentUser!!.uid
+//        val cur = databaseReference?.child(userId)?.child("image")
+//        val calendar = Calendar.getInstance()
+//        val name = calendar.timeInMillis.toString()
+//        cur?.child(name)?.setValue(Image(name,uri))
+//    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val dis = DisplayMetrics()
         activity?.windowManager?.defaultDisplay?.getMetrics(dis)
 
-        val uri = data?.data
+        uri = data?.data
         if(resultCode == RESULT_OK && requestCode == 0 ) {
-            Picasso.get().load(uri).resize(100, 100).into(img1)
+            Picasso.get().load(uri).resize(150, 150).into(img1)
+            imageList.add(uri!!)
         }else if (resultCode == RESULT_OK && requestCode == 1000 ){
             Picasso.get().load(uri).resize(dis.widthPixels,600).into(imgage)
+            anhbia = uri
         }else if (resultCode == RESULT_OK && requestCode == 20 ){
-            Picasso.get().load(uri).resize(100, 100).into(img2)
+            Picasso.get().load(uri).resize(150, 150).into(img2)
+            imageList.add(uri!!)
         }
     }
 

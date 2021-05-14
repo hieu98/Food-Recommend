@@ -6,20 +6,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
 import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 class UserFragment : Fragment() {
 
     private lateinit var mAuth :FirebaseAuth
-    var databaseReference : DatabaseReference?= null
-    var database : FirebaseDatabase?= null
+    private var databaseReference : DatabaseReference?= null
+    private var database : FirebaseDatabase?= null
+    private var storage : FirebaseStorage ?= null
+    private var storageReference : StorageReference?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +45,7 @@ class UserFragment : Fragment() {
         val name = view.findViewById<TextView>(R.id.name)
         val img = view.findViewById<CircleImageView>(R.id.img_user_avatar)
         val btn = view.findViewById<CircularProgressButton>(R.id.logout_btn)
+        val btn_your = view.findViewById<Button>(R.id.your_monan)
 
         val bundle = arguments
         if (bundle?.getString("login google") == "login google"){
@@ -66,6 +73,10 @@ class UserFragment : Fragment() {
             mAuth.signOut()
             val intent = Intent(context, LoadingActivity::class.java)
             startActivity(intent)
+        }
+
+        btn_your.setOnClickListener{
+
         }
 
         return view
