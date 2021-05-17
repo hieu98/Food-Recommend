@@ -2,21 +2,18 @@ package com.example.foodrecommend.activity
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodrecommend.R
 import com.example.foodrecommend.adapter.CachLamAdapter
-import com.example.foodrecommend.adapter.DanhSachApdater
 import com.example.foodrecommend.adapter.NguyenLieuAdapter
 import com.example.foodrecommend.data.CachLam
 import com.example.foodrecommend.data.CongThuc
-import com.example.foodrecommend.data.Image
 import com.example.foodrecommend.data.NguyenLieu
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -24,11 +21,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_cong_thuc.*
-import kotlinx.android.synthetic.main.item_show_nguyenlieu.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CongThucActivity : AppCompatActivity() {
+class RecipeActivity : AppCompatActivity() {
 
     private lateinit var mAuth : FirebaseAuth
     private var databaseReference : DatabaseReference?= null
@@ -61,6 +57,7 @@ class CongThucActivity : AppCompatActivity() {
 
         supportActionBar?.title = a.ten
         txtGTmonan.text = a.gioithieu
+        txt_nguoidangmon.text = a.nguoidang
         Picasso.get().load(a.image).into(imgv_anhbiamonan)
         ratingbar.rating = rate
         ratingbar.stepSize = .5f
@@ -112,8 +109,8 @@ class CongThucActivity : AppCompatActivity() {
                         for (i in data.child("Nguyên Liệu").children){
                             soLuong = i.child("soLuong").value.toString()
                             tenNguyenLieu = i.child("tenNguyenLieu").value.toString()
-                            listNguyenLieu.add(NguyenLieu(tenNguyenLieu,soLuong))
 
+                            listNguyenLieu.add(NguyenLieu(tenNguyenLieu,soLuong))
                             nguyenLieuAdapter.notifyDataSetChanged()
                         }
                         for (i in data.child("Cách Làm").children){
@@ -140,6 +137,9 @@ class CongThucActivity : AppCompatActivity() {
             android.R.id.home -> {
                 if (rate != 0.0f){
                     onBackPressed()
+                    val intent = Intent(this,MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 }else{
                     showDialog()
                 }

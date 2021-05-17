@@ -175,7 +175,7 @@ class AddFragment : Fragment() {
             uploadCongThuc(cachlamList,nguyenlieuList,tenmonan,gioithieumonan,nguoidangmonan)
 
             val intent = Intent(context,MainActivity::class.java)
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
 
         }
@@ -277,6 +277,7 @@ class AddFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun uploadCongThuc(cachlamList : ArrayList<CachLam>, nguyenlieuList : ArrayList<NguyenLieu>, ten :String?, gioithieu:String?,nguoidang :String?){
+        val userId = mAuth.currentUser.uid
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val formatted = current.format(formatter)
@@ -287,6 +288,7 @@ class AddFragment : Fragment() {
         cur?.child("Người đăng")?.setValue(nguoidang)
         cur?.child("Tên Món Ăn")?.setValue(ten)
         cur?.child("ItemId")?.setValue(calendar.timeInMillis)
+        cur?.child("UserId")?.setValue(userId)
         var a :String
         if (uri != null) {
             for (i in 0 until imageList.size) {

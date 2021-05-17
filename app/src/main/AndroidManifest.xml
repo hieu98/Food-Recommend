@@ -17,6 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodRecommend.Fullscreen">
+        <activity android:name=".activity.YourFoodActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activity.MainActivity" />
+        </activity>
         <activity android:name=".activity.ListRecipeActivity" />
         <activity
             android:name=".activity.MainActivity"
@@ -27,7 +32,7 @@
         <activity
             android:name=".activity.LoginActivity"
             android:theme="@style/Theme.FoodRecommend.NoActionBar.Fullscreen" />
-        <activity android:name=".activity.CongThucActivity">
+        <activity android:name=".activity.RecipeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />

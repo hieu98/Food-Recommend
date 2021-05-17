@@ -15,6 +15,7 @@
             android:background="@drawable/backrao"
             android:orientation="vertical">
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardview123"
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
@@ -42,7 +43,7 @@
                     <TextView
                         android:gravity="center"
                         android:id="@+id/tv_tt"
-                        android:text="23*C"
+                        android:text="35°C"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="30sp"
                         android:layout_marginTop="30dp"
@@ -64,8 +65,8 @@
                         app:layout_constraintStart_toStartOf="@id/tv_tg"/>
                     <ImageView
                         android:layout_marginTop="5dp"
-                        android:layout_marginStart="20dp"
-                        android:src="@drawable/ic_baseline_nights_stay_24"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/sunny"
                         android:id="@+id/imgv_tt"
                         android:layout_width="50dp"
                         android:layout_height="50dp"

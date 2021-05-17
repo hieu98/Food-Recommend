@@ -3,6 +3,7 @@ package com.example.foodrecommend.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.foodrecommend.R
 import com.example.foodrecommend.fragment.AddFragment
 import com.example.foodrecommend.fragment.HomeFragment
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().hide(fragment2).commit()
         supportFragmentManager.beginTransaction().hide(fragment3).commit()
         supportFragmentManager.beginTransaction().hide(fragment4).commit()
-        supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
+//        supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
         menu.setItemSelected(R.id.home,true)
         menu.setOnItemSelectedListener { id->
             when(id){

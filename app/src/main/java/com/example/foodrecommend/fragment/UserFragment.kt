@@ -12,6 +12,7 @@ import android.widget.Toast
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
 import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.R
+import com.example.foodrecommend.activity.YourFoodActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -36,6 +37,7 @@ class UserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_user, container, false)
+
 
         mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
@@ -76,7 +78,8 @@ class UserFragment : Fragment() {
         }
 
         btn_your.setOnClickListener{
-
+            val i = Intent(context, YourFoodActivity::class.java)
+            startActivity(i)
         }
 
         return view

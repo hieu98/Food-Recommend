@@ -50,10 +50,6 @@ class LoginActivity : AppCompatActivity() {
             signInGG()
         }
 
-        loginFB.setOnClickListener {
-            signInFB()
-        }
-
     }
 
     private fun signInGG() {

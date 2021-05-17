@@ -12,16 +12,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
+import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.foodrecommend.activity.CongThucActivity
+import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.R
 import com.example.foodrecommend.adapter.DanhSachApdater
-import com.example.foodrecommend.adapter.RecipeAdapter
 import com.example.foodrecommend.data.CachLam
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.NguyenLieu
+import com.example.foodrecommend.data.Rate
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -33,11 +35,8 @@ import java.time.format.DateTimeFormatter
 class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
 
     private lateinit var listdata: ArrayList<CongThuc>
-    private lateinit var listNguyenLieu: ArrayList<NguyenLieu>
-    private lateinit var listCachLam: ArrayList<CachLam>
-//    private lateinit var recipeAdapter : RecipeAdapter
+    private lateinit var listRate: ArrayList<Rate>
     private lateinit var recipeAdapter : DanhSachApdater
-    private var rate : Float? = null
 
     private lateinit var mAuth : FirebaseAuth
     private var databaseReference : DatabaseReference?= null
@@ -96,11 +95,9 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
             }
         })
 
-
-
         listdata = ArrayList()
-        listNguyenLieu = ArrayList()
-        recipeAdapter = DanhSachApdater(this,listdata,context!!)
+        listRate = ArrayList()
+        recipeAdapter = DanhSachApdater(this,listdata,listRate,context!!)
         listgoiy.setHasFixedSize(true)
         listgoiy.isNestedScrollingEnabled =false
         listgoiy.adapter = recipeAdapter
@@ -110,20 +107,15 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
         listmonmoi.isNestedScrollingEnabled =false
         listmonmoi.adapter = recipeAdapter
         listmonmoi.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-        getData()
-        getListNLvsListCL()
-        getRate()
 
-//        listmonmoi.setHasFixedSize(true)
-//        listmonmoi.adapter = recipeAdapter
-//        listmonmoi.layoutManager = LinearLayoutManager(this.context,LinearLayoutManager.VERTICAL,false)
-//        listmonmoi.setItemViewCacheSize(3)
+        getData()
+        getRate()
 
         return view
     }
 
     private fun getData() {
-        val userId = mAuth.currentUser.uid
+        var userId :String
         var ten : String
         var nguoidang :String
         var ngaydang :String
@@ -132,7 +124,6 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
         var itemId :String
         var congThuc :CongThuc
         listdata.clear()
-        rate = null
         databaseReference!!.child("Công Thức").addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (data in snapshot.children){
@@ -142,14 +133,14 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
                     anhbia = "" +data.child("Ảnh bìa").value.toString()
                     gioithieu = "" +data.child("Giới thiệu món ăn").value.toString()
                     itemId = "" +data.child("ItemId").value.toString()
+                    userId = "" +data.child("UserId").value.toString()
 
-                    congThuc = CongThuc(anhbia,ten,gioithieu,ngaydang,nguoidang,itemId,rate)
+                    congThuc = CongThuc(anhbia,ten,gioithieu,ngaydang,nguoidang,itemId,userId)
                     listdata.add(congThuc)
+
                     recipeAdapter.notifyDataSetChanged()
-
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.v("cancel",error.toString())
             }
@@ -157,69 +148,33 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
         })
     }
 
-    private fun getListNLvsListCL(){
-        var soLuong :String
-        var tenNguyenLieu:String
-        listNguyenLieu.clear()
-        databaseReference!!.child("Công Thức").addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (data in snapshot.children){
-
-                    for (i in data.child("Nguyên Liệu").children){
-                        soLuong = i.child("soLuong").value.toString()
-                        tenNguyenLieu = i.child("tenNguyenLieu").value.toString()
-                        listNguyenLieu.add(NguyenLieu(tenNguyenLieu,soLuong))
-                    }
-                //Log.v("listNL",listNguyenLieu.toString())
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.v("cancel",error.toString())
-            }
-
-        })
-    }
 
     private fun getRate(){
-        val userId = mAuth.currentUser.uid
-        for (i in 0 until listdata.size){
-            databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(snapshot1: DataSnapshot) {
-                    for (data1 in snapshot1.children){
-                        if ("" +data1.child("userId").value.toString() == userId
-                            &&  "" +data1.child("itemId").value.toString() == listdata[i].itemId){
-                            rate = data1.child("rate").value.toString().toFloat()
-                        }else rate = null
-                        listdata[i].rate = rate
-                        recipeAdapter.notifyDataSetChanged()
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    Log.v("cancel",error.toString())
-                }
-            })
-        }
+        var userId : String
+        var itemId :String
+        var rate :String
+        databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot1: DataSnapshot) {
+                for (data in snapshot1.children){
+                    userId = "" + data.child("userId").value.toString()
+                    itemId = "" + data.child("itemId").value.toString()
+                    rate = "" + data.child("rate").value.toString()
 
-
+                    listRate.add(Rate(userId,itemId,rate))
+                    recipeAdapter.notifyDataSetChanged()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.v("cancel",error.toString())
+            }
+        })
     }
-
 
     override fun OnItemClick(position: Int) {
         val item :CongThuc = listdata[position]
-        val intent = Intent(context, CongThucActivity::class.java)
+        val intent = Intent(context, RecipeActivity::class.java)
         intent.putExtra("mon an",item)
-        intent.putExtra("rate",rate)
         startActivity(intent)
     }
-
-
-//    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//        val item :CongThuc = listdata[position]
-//        val intent = Intent(context, CongThucActivity::class.java)
-//        intent.putExtra("mon an",item)
-//        startActivity(intent)
-//    }
-
 
 }
