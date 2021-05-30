@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodrecommend.R
@@ -15,13 +14,13 @@ import com.example.foodrecommend.adapter.NguyenLieuAdapter
 import com.example.foodrecommend.data.CachLam
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.NguyenLieu
+import com.example.foodrecommend.data.Rate
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_cong_thuc.*
-import java.util.*
 import kotlin.collections.ArrayList
 
 class RecipeActivity : AppCompatActivity() {
@@ -36,6 +35,7 @@ class RecipeActivity : AppCompatActivity() {
 
     private lateinit var listNguyenLieu: ArrayList<NguyenLieu>
     private lateinit var listCachLam: ArrayList<CachLam>
+    private lateinit var listRate: ArrayList<Rate>
     private lateinit var nguyenLieuAdapter: NguyenLieuAdapter
     private lateinit var cachLamAdapter: CachLamAdapter
 
@@ -49,7 +49,7 @@ class RecipeActivity : AppCompatActivity() {
         storageReference = storage!!.reference
         databaseReference = database?.reference
 
-        val userid = mAuth.currentUser.uid
+        val userid = mAuth.currentUser?.uid
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val a = intent.getSerializableExtra("mon an") as CongThuc
@@ -60,17 +60,47 @@ class RecipeActivity : AppCompatActivity() {
         txt_nguoidangmon.text = a.nguoidang
         Picasso.get().load(a.image).into(imgv_anhbiamonan)
         ratingbar.rating = rate
+
+        var userId : String
+        var itemId :String
+        var rateItem :String
+        databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot1: DataSnapshot) {
+                for (data in snapshot1.children){
+                    userId = "" + data.child("userId").value.toString()
+                    itemId = "" + data.child("itemId").value.toString()
+                    rateItem = "" + data.child("rate").value.toString()
+                    if (userid == userId && itemId == a.itemId){
+                        ratingbar.rating = rateItem.toFloat()
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.v("cancel",error.toString())
+            }
+        })
+
         ratingbar.stepSize = .5f
         ratingbar.setOnRatingBarChangeListener{ratingbar,rating,fromUser ->
             rate = rating
-            val cal = Calendar.getInstance()
             val dataref = databaseReference?.child("Rate")?.child(userid + a.itemId)
             dataref?.child("rate")?.setValue(rate)
-            dataref?.child("userId")?.setValue(userid)
+
+            databaseReference?.child("profile")?.child(userid!!)?.addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    dataref?.child("userId")?.setValue(snapshot.child("useridReal").value.toString())
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v("error nè","lỗi")
+                }
+
+            })
+
             dataref?.child("itemId")?.setValue(a.itemId)
-            Toast.makeText(this,"Rating: $rating",Toast.LENGTH_LONG).show()
         }
 
+        listRate = ArrayList()
         listCachLam = ArrayList()
         listNguyenLieu = ArrayList()
         listCachLam = ArrayList()

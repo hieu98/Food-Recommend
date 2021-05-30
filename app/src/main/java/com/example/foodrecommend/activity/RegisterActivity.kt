@@ -9,8 +9,7 @@ import android.widget.ScrollView
 import android.widget.Toast
 import com.example.foodrecommend.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity() {
@@ -54,6 +53,16 @@ class RegisterActivity : AppCompatActivity() {
                         val currentUser = mAuth.currentUser
                         val currentUserDb = databaseReference?.child(currentUser?.uid!!)
                         currentUserDb?.child("name")?.setValue(editTextName.text.toString())
+                        databaseReference?.addValueEventListener(object  :ValueEventListener{
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                    val countUser = snapshot.childrenCount
+                                    currentUserDb?.child("useridReal")?.setValue(countUser)
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+
+                            }
+                        })
 
                         Toast.makeText(this,"Registration Success !",Toast.LENGTH_LONG).show()
                         finish()

@@ -2,21 +2,19 @@ package com.example.foodrecommend.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
 import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.R
 import com.example.foodrecommend.activity.YourFoodActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -25,8 +23,6 @@ class UserFragment : Fragment() {
     private lateinit var mAuth :FirebaseAuth
     private var databaseReference : DatabaseReference?= null
     private var database : FirebaseDatabase?= null
-    private var storage : FirebaseStorage ?= null
-    private var storageReference : StorageReference?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +50,17 @@ class UserFragment : Fragment() {
             val currentUser = mAuth.currentUser
             val currentUserDb = databaseReference?.child(currentUser?.uid!!)
             currentUserDb?.child("name")?.setValue(currentUser?.displayName)
+            databaseReference?.addValueEventListener(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                        val countUser = snapshot.childrenCount
+                        currentUserDb?.child("useridReal")?.setValue(countUser)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v("Lỗi không thêm id user","Lỗi không thêm id user")
+                }
+
+            })
             name.text = currentUser?.displayName
             email.text = currentUser?.email
             Picasso.get().load(currentUser?.photoUrl).into(img)

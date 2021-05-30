@@ -12,8 +12,6 @@ import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_your_food.*
 
 class YourFoodActivity : AppCompatActivity(),DanhSachApdater.OnItemClickListener {
@@ -46,13 +44,13 @@ class YourFoodActivity : AppCompatActivity(),DanhSachApdater.OnItemClickListener
         recyclerview.adapter = danhsachAdapter
         recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)
 
-        val username = mAuth.currentUser.uid
+        val username = mAuth.currentUser?.uid
         getData(username)
         getRate()
 
     }
 
-    private fun getData(user:String) {
+    private fun getData(user:String?) {
         var userId :String
         var ten : String
         var nguoidang :String

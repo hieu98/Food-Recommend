@@ -16,14 +16,10 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.foodrecommend.R
 import com.example.foodrecommend.activity.MainActivity
 import com.example.foodrecommend.data.CachLam
-import com.example.foodrecommend.data.CongThuc
-import com.example.foodrecommend.data.Image
 import com.example.foodrecommend.data.NguyenLieu
-import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -33,10 +29,8 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
-import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.collections.ArrayList
 
 class AddFragment : Fragment() {
@@ -184,7 +178,7 @@ class AddFragment : Fragment() {
     }
 
     private fun add1(parentLayout: LinearLayout) {
-        val circleView= activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val circleView= requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val rowview : View= circleView.inflate(R.layout.item_add_nguyenlieu, null, false)
         parentLayout.addView(rowview, parentLayout.childCount - 1)
         val btnxoa = rowview.findViewById<Button>(R.id.xoa_nguyenlieu1)
@@ -194,7 +188,7 @@ class AddFragment : Fragment() {
     }
 
     private fun add2(parentLayout2: LinearLayout){
-        val circleView2= activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val circleView2= requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val rowview2 : View= circleView2.inflate(R.layout.item_add_cachlam, null, false)
         img2 = rowview2.findViewById(R.id.img_add)
         val btnxoa = rowview2.findViewById<Button>(R.id.xoa_cachlam)
@@ -277,18 +271,36 @@ class AddFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun uploadCongThuc(cachlamList : ArrayList<CachLam>, nguyenlieuList : ArrayList<NguyenLieu>, ten :String?, gioithieu:String?,nguoidang :String?){
-        val userId = mAuth.currentUser.uid
+        val userId = mAuth.currentUser?.uid
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val formatted = current.format(formatter)
-        val calendar = Calendar.getInstance()
         val cur = databaseReference?.child("Công Thức")?.child(ten!!)
         cur?.child("Giới thiệu món ăn")?.setValue(gioithieu!!)
         cur?.child("Ngày đăng")?.setValue(formatted)
         cur?.child("Người đăng")?.setValue(nguoidang)
         cur?.child("Tên Món Ăn")?.setValue(ten)
-        cur?.child("ItemId")?.setValue(calendar.timeInMillis)
-        cur?.child("UserId")?.setValue(userId)
+
+        databaseReference?.child("profile")?.child(userId!!)?.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                    val iduser = snapshot.child("useridReal")
+                    cur?.child("UserId")?.setValue(iduser)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.v("error","Lỗi")
+            }
+
+        })
+
+        val fileRef = storageReference?.child("Ảnh Bìa/")
+        fileRef?.listAll()?.addOnSuccessListener { listResult ->
+            for (item in listResult.items) {
+                val countofimages = listResult.items.size
+                cur?.child("ItemId")?.setValue(countofimages + 1)
+            }
+        }
+
         var a :String
         if (uri != null) {
             for (i in 0 until imageList.size) {
@@ -321,7 +333,6 @@ class AddFragment : Fragment() {
                                 a = it.toString()
                                 cur?.child("Ảnh bìa")?.setValue(a)
                             }
-//
                         }
                         ?.addOnProgressListener {
                         }
@@ -337,6 +348,7 @@ class AddFragment : Fragment() {
             cur?.child("Nguyên Liệu")?.child(i.toString())?.setValue(nguyenlieuList[i])
         }
     }
+
 
 //    private fun saveUrlToUser(uri :String){
 //        val userId = mAuth.currentUser!!.uid

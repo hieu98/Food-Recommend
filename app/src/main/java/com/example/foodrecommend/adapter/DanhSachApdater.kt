@@ -1,6 +1,7 @@
 package com.example.foodrecommend.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,22 +9,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 
 class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThuc>,var listRate :List<Rate>,var context: Context) : RecyclerView.Adapter<DanhSachApdater.ViewHolder>(){
 
     private lateinit var mAuth : FirebaseAuth
-    private var storage : FirebaseStorage?= null
-    private var storageReference : StorageReference?= null
-    private var rateItem : Float? = null
+    var databaseReference : DatabaseReference?= null
+    var database : FirebaseDatabase?= null
+    private lateinit var arrayData :ArrayList<String>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DanhSachApdater.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
@@ -31,30 +31,57 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
     }
 
     override fun onBindViewHolder(holder: DanhSachApdater.ViewHolder, position: Int) {
-        val item = list[position]
         mAuth = FirebaseAuth.getInstance()
-//        if (item.userId != mAuth.currentUser.uid.toString()){
+        database = FirebaseDatabase.getInstance()
+        databaseReference = database?.reference?.child("profile")?.child(mAuth.currentUser?.uid!!)
+        val item = list[position]
+        arrayData = ArrayList()
+        mAuth = FirebaseAuth.getInstance()
             Picasso.get().load(item.image).resize(100,100).into(holder.img)
             holder.tenmon.text = item.ten
             holder.nguoidang.text = item.nguoidang
-            if(listRate.size != 0){
-                for (i in 0 until listRate.size){
-                    if (item.itemId == listRate[i].itemId && mAuth.currentUser.uid.toString() == listRate[i].userId){
-                        holder.rate.rating = listRate[i].rate.toFloat()
-                        Log.v("Rate-item",listRate[i].rate.toString())
-                        break
-                    }else {
-                        holder.rate.rating = 0.0f
+        databaseReference?.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(listRate.isNotEmpty()){
+                    for (i in listRate.indices){
+                        if (item.itemId == listRate[i].itemId && snapshot.child("useridReal").value.toString() == listRate[i].userId){
+                            holder.rate.rating = listRate[i].rate.toFloat()
+                            Log.v("Rate-item",listRate[i].rate)
+                            break
+                        }else {
+                            holder.rate.rating = 0.0f
+                        }
                     }
+                }else{
+                    holder.rate.rating = 0.0f
                 }
-            }else{
-                holder.rate.rating = 0.0f
             }
-//        }
 
+            override fun onCancelled(error: DatabaseError) {
+                Log.v("cancel",error.toString())
+            }
+
+        })
+
+        if(listRate.isNotEmpty()){
+            for (i in listRate.indices){
+                arrayData.add((i+1).toString() + " " + (i+2).toString() + " " +(i+0.5).toString()+ "\n")
+            }
+        }
+
+        Log.v("arrayData",arrayData.toString())
+        var datasend =""
+        for (i in 0 until arrayData.size){
+            datasend += arrayData[i]
+        }
+
+        val intent = Intent("message")
+        intent.putExtra("senddata",datasend)
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
 //        holder.thoigian.text = item.thoigian
 //        holder.thoitiet.text = item.thoitiet
+
 
     }
 
@@ -89,5 +116,4 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
     interface OnItemClickListener{
         fun OnItemClick(position: Int)
     }
-
 }

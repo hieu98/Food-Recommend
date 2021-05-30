@@ -12,17 +12,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.cardview.widget.CardView
-import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.R
 import com.example.foodrecommend.adapter.DanhSachApdater
-import com.example.foodrecommend.data.CachLam
 import com.example.foodrecommend.data.CongThuc
-import com.example.foodrecommend.data.NguyenLieu
 import com.example.foodrecommend.data.Rate
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -62,11 +58,11 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
 
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val time = view.findViewById<TextView>(R.id.tv_tg)
-        val temperature = view.findViewById<TextView>(R.id.tv_tt)
+//        val temperature = view.findViewById<TextView>(R.id.tv_tt)
         val session = view.findViewById<TextView>(R.id.txt_thoigian)
         val imgsession = view.findViewById<ImageView>(R.id.imgv_tg)
-        val weather = view.findViewById<TextView>(R.id.txt_thoitiet)
-        val imgweather = view.findViewById<ImageView>(R.id.imgv_tt)
+//        val weather = view.findViewById<TextView>(R.id.txt_thoitiet)
+//        val imgweather = view.findViewById<ImageView>(R.id.imgv_tt)
         val listgoiy = view.findViewById<RecyclerView>(R.id.listgoiy)
         val listmonmoi = view.findViewById<RecyclerView>(R.id.listmonmoi)
         val handler = Handler(Looper.getMainLooper())
@@ -97,7 +93,7 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
 
         listdata = ArrayList()
         listRate = ArrayList()
-        recipeAdapter = DanhSachApdater(this,listdata,listRate,context!!)
+        recipeAdapter = DanhSachApdater(this,listdata,listRate,requireContext())
         listgoiy.setHasFixedSize(true)
         listgoiy.isNestedScrollingEnabled =false
         listgoiy.adapter = recipeAdapter
@@ -176,5 +172,4 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
         intent.putExtra("mon an",item)
         startActivity(intent)
     }
-
 }

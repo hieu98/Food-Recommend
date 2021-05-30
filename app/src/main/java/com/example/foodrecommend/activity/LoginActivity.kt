@@ -57,9 +57,6 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    private fun signInFB(){
-
-    }
 
     private fun login(){
         cirLoginButton.setOnClickListener{
