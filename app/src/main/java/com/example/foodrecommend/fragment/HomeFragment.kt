@@ -15,9 +15,10 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.R
+import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.adapter.DanhSachApdater
+import com.example.foodrecommend.adapter.RecommendAdapter
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
 import com.google.firebase.auth.FirebaseAuth
@@ -27,12 +28,14 @@ import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.stream.Stream
 
-class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
+class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAdapter.OnItemClickListener {
 
     private lateinit var listdata: ArrayList<CongThuc>
     private lateinit var listRate: ArrayList<Rate>
     private lateinit var recipeAdapter : DanhSachApdater
+    private lateinit var recommendAdapter: RecommendAdapter
 
     private lateinit var mAuth : FirebaseAuth
     private var databaseReference : DatabaseReference?= null
@@ -55,6 +58,18 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
         storage = FirebaseStorage.getInstance()
         storageReference = storage!!.reference
         databaseReference = database?.reference
+        val arraydata :List<Int>?
+        val bundle = arguments
+        val dataget = bundle?.getString("data get")
+        if (dataget == "a"){
+            arraydata = arrayListOf(0,0)
+        }else{
+            arraydata = dataget?.removeSurrounding("[","]")?.replace(" ","")?.split(",")?.map { it.toInt() }
+        }
+//        val datag = dataget?.substring(1,dataget.length-1)
+//        val pat = datag?.split(",")
+//        val arraydata :List<Int> = Stream.of(pat).mapToInt {  }
+
 
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val time = view.findViewById<TextView>(R.id.tv_tg)
@@ -94,9 +109,10 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener {
         listdata = ArrayList()
         listRate = ArrayList()
         recipeAdapter = DanhSachApdater(this,listdata,listRate,requireContext())
+        recommendAdapter = RecommendAdapter(this,listdata,listRate,requireContext(),arraydata!!)
         listgoiy.setHasFixedSize(true)
         listgoiy.isNestedScrollingEnabled =false
-        listgoiy.adapter = recipeAdapter
+        listgoiy.adapter = recommendAdapter
         listgoiy.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
 
         listmonmoi.setHasFixedSize(true)

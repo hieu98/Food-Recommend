@@ -1,5 +1,6 @@
 package com.example.foodrecommend.activity
 
+import android.content.ContextWrapper
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -13,20 +14,23 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import okhttp3.*
-import java.io.IOException
+import java.io.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mAuth : FirebaseAuth
-    var databaseReference : DatabaseReference?= null
+    private var databaseReference : DatabaseReference?= null
     var database : FirebaseDatabase?= null
+    private var fileName = "ex.txt"
+    private var filepath = "save"
+    var serverResponseCode = 0
 
     private val fragment1: Fragment = HomeFragment()
     private val fragment2: Fragment = AddFragment()
     private val fragment3: Fragment = UserFragment()
     private val fragment4: Fragment = SearchFragment()
-    var active = fragment1
+    private var active = fragment1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,37 +40,71 @@ class MainActivity : AppCompatActivity() {
 //        val user = mAuth.currentUser?.uid
         database = FirebaseDatabase.getInstance()
         databaseReference = database?.reference
-        var datasend=""
-        databaseReference?.child("Rate")?.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (data in snapshot.children ){
-                    val datain = ""+data.child("userId")+" "+data.child("itemId")+" "+data.child("rate")
-                    datasend += datain
-                }
 
-            }
+//        val file : File
+//        val contextWrapper = ContextWrapper(application)
+//        val direc :File = contextWrapper.getDir(filepath, MODE_PRIVATE)
+//        file = File(direc,fileName)
 
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        })
-
+//        var datasend="1 1 3.5\n" +
+//                "1 2 5\n" +
+//                "1 3 5\n" +
+//                "1 10 3.5\n" +
+//                "2 7 3.5\n" +
+//                "2 8 1\n" +
+//                "2 9 1.5\n" +
+//                "3 2 5\n" +
+//                "3 6 5\n" +
+//                "3 7 0.5\n" +
+//                "3 10 0\n" +
+//                "4 1 1\n" +
+//                "4 4 2.5\n" +
+//                "4 6 3\n" +
+//                "4 8 4.5\n" +
+//                "5 1 5\n" +
+//                "5 3 3.5\n" +
+//                "5 5 3\n" +
+//                "5 7 3.5\n" +
+//                "6 2 3.5\n" +
+//                "6 3 3\n" +
+//                "6 5 1.5\n" +
+//                "7 3 3.5\n" +
+//                "7 5 3.5"
+        val datasend = "1"
+//        databaseReference?.child("Rate")?.addValueEventListener(object :ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                for (data in snapshot.children ){
+//                    val datain = ""+data.child("userId")+" "+data.child("itemId")+" "+data.child("rate")+ "\n"
+//                    saveData(datain)
+//                }
+//
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//
+//            }
+//        })
+        Log.v("data send main",datasend)
+        val realid = intent.getStringExtra("useridReal")
         val okHttpClient = OkHttpClient()
-        val formBody = FormBody.Builder().add("uid", "1").add("data" , datasend).build()
-        val request = Request.Builder().url("http://192.168.0.101:3000/testpost").post(formBody).build()
+        val formBody = FormBody.Builder().add("uid", realid!!).add("data" , datasend).build()
+        val request = Request.Builder().url("http://192.168.0.101:3000/").post(formBody).build()
         okHttpClient.newCall(request).enqueue(object  : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Log.v("okhttp error","Network not found")
+                    e.printStackTrace()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val testOk = response.body?.string()
+                val bun = Bundle()
+                bun.putString("data get",testOk)
+                fragment1.arguments = bun
                 Log.v("testOk",testOk!!)
             }
         })
-
 
 
         val menu = findViewById<ChipNavigationBar>(R.id.menu_bottom)
@@ -105,6 +143,5 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
 
 }

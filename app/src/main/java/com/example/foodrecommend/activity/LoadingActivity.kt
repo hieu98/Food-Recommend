@@ -4,12 +4,16 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import com.example.foodrecommend.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class LoadingActivity : AppCompatActivity() {
 
     private lateinit var mAuth : FirebaseAuth
+    private var databaseReference : DatabaseReference?= null
+    private var database : FirebaseDatabase?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,6 +21,8 @@ class LoadingActivity : AppCompatActivity() {
 
         mAuth = FirebaseAuth.getInstance()
         val user = mAuth.currentUser
+        database = FirebaseDatabase.getInstance()
+        databaseReference = database?.reference?.child("profile")
 
         Handler().postDelayed({
             if(user == null){
@@ -29,8 +35,18 @@ class LoadingActivity : AppCompatActivity() {
                 if(a){
                     userIntent.putExtra("login google",true)
                 }
-                startActivity(userIntent)
-                finish()
+                databaseReference?.child(user.uid)?.addValueEventListener(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val realid = snapshot.child("useridReal").value.toString()
+                        userIntent.putExtra("useridReal",realid)
+                        startActivity(userIntent)
+                        finish()
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.v("error",error.toString())
+                    }
+
+                })
             }
         },2000)
     }

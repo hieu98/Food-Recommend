@@ -58,6 +58,7 @@ class RecipeActivity : AppCompatActivity() {
         supportActionBar?.title = a.ten
         txtGTmonan.text = a.gioithieu
         txt_nguoidangmon.text = a.nguoidang
+        txt_ngaydangmon.text = a.ngaydang
         Picasso.get().load(a.image).into(imgv_anhbiamonan)
         ratingbar.rating = rate
 

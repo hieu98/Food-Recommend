@@ -39,5 +39,6 @@
     <string name="an_gi">Ăn gì bây giờ ?</string>
     <string name="mon_moi">Món ăn mới</string>
     <string name="nguoidangmon">Người đăng:</string>
+    <string name="ngaydangmon">Ngày đăng món :</string>
     <!--    <string name="default_web_client_id">Default</string>-->
 </resources>
