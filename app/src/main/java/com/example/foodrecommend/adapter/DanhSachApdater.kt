@@ -62,23 +62,6 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
             }
 
         })
-
-        if(listRate.isNotEmpty()){
-            for (i in listRate.indices){
-                arrayData.add((i+1).toString() + " " + (i+2).toString() + " " +(i+0.5).toString()+ "\n")
-            }
-        }
-
-        Log.v("arrayData",arrayData.toString())
-        var datasend =""
-        for (i in 0 until arrayData.size){
-            datasend += arrayData[i]
-        }
-
-        val intent = Intent("message")
-        intent.putExtra("senddata",datasend)
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
-
 //        holder.thoigian.text = item.thoigian
 //        holder.thoitiet.text = item.thoitiet
 

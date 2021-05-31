@@ -44,7 +44,7 @@ class YourFoodActivity : AppCompatActivity(),DanhSachApdater.OnItemClickListener
         recyclerview.adapter = danhsachAdapter
         recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)
 
-        val username = mAuth.currentUser?.uid
+        val username = intent.getStringExtra("uid")
         getData(username)
         getRate()
 

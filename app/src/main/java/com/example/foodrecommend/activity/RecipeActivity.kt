@@ -53,7 +53,7 @@ class RecipeActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val a = intent.getSerializableExtra("mon an") as CongThuc
-        rate = intent.getFloatExtra("rate",0.0f)
+//        rate = intent.getFloatExtra("rate",0.0f)
 
         supportActionBar?.title = a.ten
         txtGTmonan.text = a.gioithieu
@@ -71,7 +71,7 @@ class RecipeActivity : AppCompatActivity() {
                     userId = "" + data.child("userId").value.toString()
                     itemId = "" + data.child("itemId").value.toString()
                     rateItem = "" + data.child("rate").value.toString()
-                    if (userid == userId && itemId == a.itemId){
+                    if (a.userId == userId && itemId == a.itemId){
                         ratingbar.rating = rateItem.toFloat()
                     }
                 }
@@ -168,8 +168,7 @@ class RecipeActivity : AppCompatActivity() {
             android.R.id.home -> {
                 if (rate != 0.0f){
                     onBackPressed()
-                    val intent = Intent(this,MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    val intent = Intent(this,LoadingActivity::class.java)
                     startActivity(intent)
                 }else{
                     showDialog()
@@ -188,6 +187,8 @@ class RecipeActivity : AppCompatActivity() {
         builder.setMessage("Bạn có muốn đánh giá món ăn này ?")
         builder.setPositiveButton("Không") { dialogInterface: DialogInterface, i: Int ->
             onBackPressed()
+            val intent = Intent(this,LoadingActivity::class.java)
+            startActivity(intent)
         }
         builder.setNegativeButton("Có") { dialogInterface: DialogInterface, i: Int -> }
         builder.show()

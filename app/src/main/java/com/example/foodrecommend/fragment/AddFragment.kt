@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.foodrecommend.R
+import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.activity.MainActivity
 import com.example.foodrecommend.data.CachLam
 import com.example.foodrecommend.data.NguyenLieu
@@ -31,6 +32,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.collections.ArrayList
 
 class AddFragment : Fragment() {
@@ -168,7 +170,7 @@ class AddFragment : Fragment() {
             }
             uploadCongThuc(cachlamList,nguyenlieuList,tenmonan,gioithieumonan,nguoidangmonan)
 
-            val intent = Intent(context,MainActivity::class.java)
+            val intent = Intent(context,LoadingActivity::class.java)
 //            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
 
@@ -275,7 +277,8 @@ class AddFragment : Fragment() {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val formatted = current.format(formatter)
-        val cur = databaseReference?.child("Công Thức")?.child(ten!!)
+        val cal = Calendar.getInstance()
+        val cur = databaseReference?.child("Công Thức")?.child(cal.timeInMillis.toString())
         cur?.child("Giới thiệu món ăn")?.setValue(gioithieu!!)
         cur?.child("Ngày đăng")?.setValue(formatted)
         cur?.child("Người đăng")?.setValue(nguoidang)
@@ -283,7 +286,7 @@ class AddFragment : Fragment() {
 
         databaseReference?.child("profile")?.child(userId!!)?.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                    val iduser = snapshot.child("useridReal")
+                    val iduser = snapshot.child("useridReal").value
                     cur?.child("UserId")?.setValue(iduser)
             }
 
@@ -293,7 +296,7 @@ class AddFragment : Fragment() {
 
         })
 
-        val fileRef = storageReference?.child("Ảnh Bìa/")
+        val fileRef = storageReference?.child("Ảnh bìa/")
         fileRef?.listAll()?.addOnSuccessListener { listResult ->
             for (item in listResult.items) {
                 val countofimages = listResult.items.size

@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.foodrecommend.R
 import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.adapter.DanhSachApdater
@@ -28,7 +29,6 @@ import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.stream.Stream
 
 class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAdapter.OnItemClickListener {
 
@@ -61,7 +61,7 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
         val arraydata :List<Int>?
         val bundle = arguments
         val dataget = bundle?.getString("data get")
-        if (dataget == "a"){
+        if (dataget == "a" || dataget == "[]"){
             arraydata = arrayListOf(0,0)
         }else{
             arraydata = dataget?.removeSurrounding("[","]")?.replace(" ","")?.split(",")?.map { it.toInt() }
@@ -105,11 +105,17 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
                 handler.postDelayed(this, 1000)
             }
         })
-
         listdata = ArrayList()
         listRate = ArrayList()
         recipeAdapter = DanhSachApdater(this,listdata,listRate,requireContext())
         recommendAdapter = RecommendAdapter(this,listdata,listRate,requireContext(),arraydata!!)
+
+//        for (g in arraydata.indices){
+//            if (arraydata[g] == 0){
+//                listgoiy.isActivated = false
+//                break
+//            }
+//        }
         listgoiy.setHasFixedSize(true)
         listgoiy.isNestedScrollingEnabled =false
         listgoiy.adapter = recommendAdapter
@@ -149,7 +155,7 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
 
                     congThuc = CongThuc(anhbia,ten,gioithieu,ngaydang,nguoidang,itemId,userId)
                     listdata.add(congThuc)
-
+                    recommendAdapter.notifyDataSetChanged()
                     recipeAdapter.notifyDataSetChanged()
                 }
             }
@@ -159,7 +165,6 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
 
         })
     }
-
 
     private fun getRate(){
         var userId : String
@@ -173,6 +178,7 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
                     rate = "" + data.child("rate").value.toString()
 
                     listRate.add(Rate(userId,itemId,rate))
+                    recommendAdapter.notifyDataSetChanged()
                     recipeAdapter.notifyDataSetChanged()
                 }
             }
@@ -188,4 +194,5 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
         intent.putExtra("mon an",item)
         startActivity(intent)
     }
+
 }

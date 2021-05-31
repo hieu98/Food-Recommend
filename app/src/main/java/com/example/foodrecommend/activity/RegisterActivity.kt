@@ -53,17 +53,6 @@ class RegisterActivity : AppCompatActivity() {
                         val currentUser = mAuth.currentUser
                         val currentUserDb = databaseReference?.child(currentUser?.uid!!)
                         currentUserDb?.child("name")?.setValue(editTextName.text.toString())
-                        databaseReference?.addValueEventListener(object  :ValueEventListener{
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                    val countUser = snapshot.childrenCount
-                                    currentUserDb?.child("useridReal")?.setValue(countUser)
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-
-                            }
-                        })
-
                         Toast.makeText(this,"Registration Success !",Toast.LENGTH_LONG).show()
                         finish()
 

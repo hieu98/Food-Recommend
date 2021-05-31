@@ -43,7 +43,7 @@
         android:id="@+id/img_show_cachlam"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="@drawable/ic_add"
+        android:background="@color/white"
         android:layout_marginBottom="10dp"/>
 
 </LinearLayout>

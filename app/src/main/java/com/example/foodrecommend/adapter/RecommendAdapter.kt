@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.data.CongThuc
@@ -24,6 +25,11 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
+        for (i in listmon.indices){
+            if (listmon[i] == 0){
+                view.isInvisible = true
+            }
+        }
         return ViewHolder(view)
     }
 

@@ -45,19 +45,31 @@ class UserFragment : Fragment() {
         val btn = view.findViewById<CircularProgressButton>(R.id.logout_btn)
         val btn_your = view.findViewById<Button>(R.id.your_monan)
 
+        val i = Intent(context, YourFoodActivity::class.java)
         val bundle = arguments
         if (bundle?.getString("login google") == "login google"){
             val currentUser = mAuth.currentUser
             val currentUserDb = databaseReference?.child(currentUser?.uid!!)
             currentUserDb?.child("name")?.setValue(currentUser?.displayName)
-            databaseReference?.addValueEventListener(object :ValueEventListener{
+            databaseReference?.addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                        val countUser = snapshot.childrenCount
-                        currentUserDb?.child("useridReal")?.setValue(countUser)
+                    val countUser = snapshot.childrenCount
+                    currentUserDb?.child("useridReal")?.setValue(countUser)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.v("Lỗi không thêm id user","Lỗi không thêm id user")
+                }
+
+            })
+            currentUserDb?.addValueEventListener(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val usid = ""+snapshot.child("useridReal").value.toString()
+                    i.putExtra("uid",usid)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
                 }
 
             })
@@ -69,9 +81,21 @@ class UserFragment : Fragment() {
             val user = mAuth.currentUser
             val userref = databaseReference?.child(user?.uid!!)
             email.text = user?.email
+            databaseReference?.addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val countUser = snapshot.childrenCount
+                    userref?.child("useridReal")?.setValue(countUser)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v("Lỗi không thêm id user","Lỗi không thêm id user")
+                }
+
+            })
             userref?.addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     name.text = snapshot.child("name").value.toString()
+                    i.putExtra("uid",snapshot.child("useridReal").value.toString())
                 }
                 override fun onCancelled(error: DatabaseError) {
                 }
@@ -85,10 +109,8 @@ class UserFragment : Fragment() {
         }
 
         btn_your.setOnClickListener{
-            val i = Intent(context, YourFoodActivity::class.java)
             startActivity(i)
         }
-
         return view
     }
 

@@ -6,7 +6,7 @@
     <TextView
         android:id="@+id/txt_nguyenlieu"
         android:layout_alignParentStart="true"
-        android:layout_marginEnd="100dp"
+        android:layout_marginEnd="120dp"
         android:layout_marginStart="20dp"
         android:layout_width="match_parent"
         android:layout_height="35dp"/>

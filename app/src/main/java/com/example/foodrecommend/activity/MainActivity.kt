@@ -1,10 +1,11 @@
 package com.example.foodrecommend.activity
 
-import android.content.ContextWrapper
+import android.content.*
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.foodrecommend.R
 import com.example.foodrecommend.fragment.AddFragment
 import com.example.foodrecommend.fragment.HomeFragment
@@ -14,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import okhttp3.*
+import okhttp3.internal.notifyAll
 import java.io.*
 
 
@@ -70,22 +72,39 @@ class MainActivity : AppCompatActivity() {
 //                "6 5 1.5\n" +
 //                "7 3 3.5\n" +
 //                "7 5 3.5"
-        val datasend = "1"
-//        databaseReference?.child("Rate")?.addValueEventListener(object :ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (data in snapshot.children ){
-//                    val datain = ""+data.child("userId")+" "+data.child("itemId")+" "+data.child("rate")+ "\n"
-//                    saveData(datain)
-//                }
-//
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//
-//            }
-//        })
-        Log.v("data send main",datasend)
+
+        var datasend = "1"
+//                var datasend="1 1 3.5\n" +
+//                "2 2 3.5\n" +
+//                "3 3 5\n" +
+//                "4 4 1\n" +
+//                "5 5 5\n" +
+//                "6 6 3.5\n" +
+//                "7 7 3.5"
         val realid = intent.getStringExtra("useridReal")
+
+        databaseReference?.child("Rate")?.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (data in snapshot.children ){
+                    datasend = ""+data.child("userId").value.toString()+" "+data.child("itemId").value.toString()+" "+data.child("rate").value.toString()+ "\n"
+                    val intent = Intent("message")
+                    intent.putExtra("senddata",datasend)
+                    LocalBroadcastManager.getInstance(this@MainActivity).sendBroadcast(intent)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+        LocalBroadcastManager.getInstance(this).registerReceiver(object :BroadcastReceiver(){
+            override fun onReceive(context: Context?, intent: Intent?) {
+                datasend += intent?.getStringExtra("senddata").toString()
+
+            }
+        }, IntentFilter("message"))
+
+        Log.v("data send main",datasend)
         val okHttpClient = OkHttpClient()
         val formBody = FormBody.Builder().add("uid", realid!!).add("data" , datasend).build()
         val request = Request.Builder().url("http://192.168.0.101:3000/").post(formBody).build()
@@ -105,8 +124,7 @@ class MainActivity : AppCompatActivity() {
                 Log.v("testOk",testOk!!)
             }
         })
-
-
+        
         val menu = findViewById<ChipNavigationBar>(R.id.menu_bottom)
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment4, "4").commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment3, "3").commit()
