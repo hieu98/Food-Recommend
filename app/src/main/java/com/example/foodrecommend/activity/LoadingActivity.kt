@@ -24,6 +24,8 @@ class LoadingActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
         databaseReference = database?.reference?.child("profile")
 
+        val add = intent.getBooleanExtra("add data",false)
+
         Handler().postDelayed({
             if(user == null){
                 val signInIntent = Intent(this, LoginActivity::class.java)
@@ -35,9 +37,13 @@ class LoadingActivity : AppCompatActivity() {
                 if(a){
                     userIntent.putExtra("login google",true)
                 }
-                databaseReference?.child(user.uid)?.addValueEventListener(object :ValueEventListener{
+                if (add){
+                    userIntent.putExtra("add data",true)
+                }
+                databaseReference?.child(user.uid)?.addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        val realid = snapshot.child("useridReal").value.toString()
+                        val realid = "" + snapshot.child("useridReal").value.toString()
+                        Log.v("load uid",realid)
                         userIntent.putExtra("useridReal",realid)
                         startActivity(userIntent)
                         finish()

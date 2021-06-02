@@ -171,6 +171,7 @@ class AddFragment : Fragment() {
             uploadCongThuc(cachlamList,nguyenlieuList,tenmonan,gioithieumonan,nguoidangmonan)
 
             val intent = Intent(context,LoadingActivity::class.java)
+            intent.putExtra("add data",true)
 //            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
 
@@ -278,11 +279,13 @@ class AddFragment : Fragment() {
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val formatted = current.format(formatter)
         val cal = Calendar.getInstance()
-        val cur = databaseReference?.child("Công Thức")?.child(cal.timeInMillis.toString())
+        val timelimit = cal.timeInMillis.toString()
+        val cur = databaseReference?.child("Công Thức")?.child(ten!!)
         cur?.child("Giới thiệu món ăn")?.setValue(gioithieu!!)
         cur?.child("Ngày đăng")?.setValue(formatted)
         cur?.child("Người đăng")?.setValue(nguoidang)
         cur?.child("Tên Món Ăn")?.setValue(ten)
+        cur?.child("TLM")?.setValue(timelimit)
 
         databaseReference?.child("profile")?.child(userId!!)?.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {

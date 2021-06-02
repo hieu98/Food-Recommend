@@ -42,9 +42,10 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
             holder.nguoidang.text = item.nguoidang
         databaseReference?.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
+                val usid = "" + snapshot.child("useridReal").value.toString()
                 if(listRate.isNotEmpty()){
                     for (i in listRate.indices){
-                        if (item.itemId == listRate[i].itemId && snapshot.child("useridReal").value.toString() == listRate[i].userId){
+                        if (item.itemId == listRate[i].itemId && usid == listRate[i].userId){
                             holder.rate.rating = listRate[i].rate.toFloat()
                             Log.v("Rate-item",listRate[i].rate)
                             break

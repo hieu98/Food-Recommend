@@ -27,6 +27,7 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
         for (i in listmon.indices){
             if (listmon[i] == 0){
+                Log.v("invisi","true")
                 view.isInvisible = true
             }
         }
@@ -41,6 +42,7 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
         mAuth = FirebaseAuth.getInstance()
         for (z in listmon.indices){
             if (item.itemId == listmon[z].toString()){
+                Log.v("list mon $z",listmon[z].toString())
                 Picasso.get().load(item.image).resize(100,100).into(holder.img)
                 holder.tenmon.text = item.ten
                 holder.nguoidang.text = item.nguoidang
@@ -50,7 +52,7 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
                             for (i in listRate.indices){
                                 if (item.itemId == listRate[i].itemId && snapshot.child("useridReal").value.toString() == listRate[i].userId){
                                     holder.rate.rating = listRate[i].rate.toFloat()
-                                    Log.v("Rate-item",listRate[i].rate)
+                                    Log.v("Rate-item recom",listRate[i].rate)
                                     break
                                 }else {
                                     holder.rate.rating = 0.0f
@@ -66,6 +68,8 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
                     }
 
                 })
+            }else{
+                holder.itemView.visibility = View.GONE
             }
         }
 //        holder.thoigian.text = item.thoigian
@@ -94,13 +98,13 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
         override fun onClick(v: View?) {
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
-                listener.OnItemClick(position)
+                listener.OnItemClickNew(position)
             }
         }
 //        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
 //        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
     }
     interface OnItemClickListener{
-        fun OnItemClick(position: Int)
+        fun OnItemClickNew(position: Int)
     }
 }

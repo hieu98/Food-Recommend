@@ -52,8 +52,12 @@ class RecipeActivity : AppCompatActivity() {
         val userid = mAuth.currentUser?.uid
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val a = intent.getSerializableExtra("mon an") as CongThuc
-//        rate = intent.getFloatExtra("rate",0.0f)
+        val new = intent.getBooleanExtra("new",false)
+        val a = if (new){
+            intent.getSerializableExtra("mon an new") as CongThuc
+        }else{
+            intent.getSerializableExtra("mon an") as CongThuc
+        }
 
         supportActionBar?.title = a.ten
         txtGTmonan.text = a.gioithieu
@@ -65,21 +69,33 @@ class RecipeActivity : AppCompatActivity() {
         var userId : String
         var itemId :String
         var rateItem :String
-        databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot1: DataSnapshot) {
-                for (data in snapshot1.children){
-                    userId = "" + data.child("userId").value.toString()
-                    itemId = "" + data.child("itemId").value.toString()
-                    rateItem = "" + data.child("rate").value.toString()
-                    if (a.userId == userId && itemId == a.itemId){
-                        ratingbar.rating = rateItem.toFloat()
+
+        databaseReference?.child("profile")?.child(userid!!)?.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val usid = snapshot.child("useridReal").value.toString()
+                databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener{
+                    override fun onDataChange(snapshot1: DataSnapshot) {
+                        for (data in snapshot1.children){
+                            userId = "" + data.child("userId").value.toString()
+                            itemId = "" + data.child("itemId").value.toString()
+                            rateItem = "" + data.child("rate").value.toString()
+
+                            if ( usid == userId && itemId == a.itemId){
+                                ratingbar.rating = rateItem.toFloat()
+                            }
+                        }
                     }
-                }
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.v("cancel",error.toString())
+                    }
+                })
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Log.v("cancel",error.toString())
             }
+
         })
+
 
         ratingbar.stepSize = .5f
         ratingbar.setOnRatingBarChangeListener{ratingbar,rating,fromUser ->
@@ -91,13 +107,10 @@ class RecipeActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     dataref?.child("userId")?.setValue(snapshot.child("useridReal").value.toString())
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     Log.v("error nè","lỗi")
                 }
-
             })
-
             dataref?.child("itemId")?.setValue(a.itemId)
         }
 
@@ -169,6 +182,7 @@ class RecipeActivity : AppCompatActivity() {
                 if (rate != 0.0f){
                     onBackPressed()
                     val intent = Intent(this,LoadingActivity::class.java)
+                    intent.putExtra("add data",true)
                     startActivity(intent)
                 }else{
                     showDialog()
@@ -188,6 +202,7 @@ class RecipeActivity : AppCompatActivity() {
         builder.setPositiveButton("Không") { dialogInterface: DialogInterface, i: Int ->
             onBackPressed()
             val intent = Intent(this,LoadingActivity::class.java)
+            intent.putExtra("add data",true)
             startActivity(intent)
         }
         builder.setNegativeButton("Có") { dialogInterface: DialogInterface, i: Int -> }
