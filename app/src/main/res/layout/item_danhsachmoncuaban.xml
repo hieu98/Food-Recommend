@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="10dp">
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview"
@@ -56,50 +56,30 @@
                 android:text="day la nguoi dang"
                 android:textColor="#000000"
                 android:textSize="13sp" />
-            <TextView
-                android:id="@+id/tv1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv2"
+            <LinearLayout
+                android:id="@+id/ln"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/txtnguoidang_dsct"
                 android:layout_alignStart="@+id/txttenmon_dsct"
-                android:layout_marginTop="10dp"
-                android:text="TAGS : "
-                android:textColor="#6688CC"
-                android:textSize="13sp" />
-            <TextView
-                android:id="@+id/txtthoigian_dsct"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv1"
-                android:layout_alignStart="@+id/txttenmon_dsct"
-                android:layout_margin="5dp"
-                android:background="@drawable/tags_background"
+                android:orientation="horizontal"
                 android:gravity="center"
-                android:includeFontPadding="false"
-                android:paddingStart="10dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="5dp"
-                android:text="Trưa"
-                android:textColor="#000000"
-                android:textSize="13sp" />
-            <TextView
-                android:id="@+id/txtthoitiet_dsct"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv1"
-                android:layout_margin="5dp"
-                android:layout_toEndOf="@id/txtthoigian_dsct"
-                android:background="@drawable/tags_background"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:paddingStart="10dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="5dp"
-                android:text="Nóng"
-                android:textColor="#000000"
-                android:textSize="13sp" />
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btn_suamon"
+                    android:textAllCaps="false"
+                    android:text="@string/sua_mon"
+                    android:layout_marginStart="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <Button
+                    android:textAllCaps="false"
+                    android:id="@+id/btn_xoamon"
+                    android:text="@string/xoa_mon"
+                    android:layout_marginStart="25dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
