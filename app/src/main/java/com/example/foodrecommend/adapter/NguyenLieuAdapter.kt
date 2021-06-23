@@ -9,10 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.data.NguyenLieu
 
-class NguyenLieuAdapter (var list: List<NguyenLieu>, var context: Context) : RecyclerView.Adapter<NguyenLieuAdapter.ViewHolder>(){
+class NguyenLieuAdapter(var list: List<NguyenLieu>, var context: Context) :
+    RecyclerView.Adapter<NguyenLieuAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NguyenLieuAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_show_nguyenlieu,parent,false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): NguyenLieuAdapter.ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_show_nguyenlieu, parent, false)
         return ViewHolder(view)
     }
 

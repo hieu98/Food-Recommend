@@ -31,19 +31,20 @@ import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAdapter.OnItemClickListener {
+class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
+    RecommendAdapter.OnItemClickListener {
 
     private lateinit var listdata: ArrayList<CongThuc>
     private lateinit var listdatanew: ArrayList<CongThuc>
     private lateinit var listRate: ArrayList<Rate>
-    private lateinit var recipeAdapter : DanhSachApdater
+    private lateinit var recipeAdapter: DanhSachApdater
     private lateinit var recommendAdapter: RecommendAdapter
 
-    private lateinit var mAuth : FirebaseAuth
-    private var databaseReference : DatabaseReference?= null
-    private var database : FirebaseDatabase?= null
-    private var storage : FirebaseStorage?= null
-    private var storageReference : StorageReference?= null
+    private lateinit var mAuth: FirebaseAuth
+    private var databaseReference: DatabaseReference? = null
+    private var database: FirebaseDatabase? = null
+    private var storage: FirebaseStorage? = null
+    private var storageReference: StorageReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +62,7 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
         storageReference = storage!!.reference
         databaseReference = database?.reference
 
-        var arraydata :List<Int>?
+        var arraydata: List<Int>?
 
         val bundle = arguments
         val realid = bundle?.getString("realid")
@@ -87,18 +88,18 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
                 val current = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("HH:mm")
                 val formatted = current.format(formatter)
-                val c : java.util.Calendar = java.util.Calendar.getInstance()
+                val c: java.util.Calendar = java.util.Calendar.getInstance()
                 val timeofday = c.get(Calendar.HOUR_OF_DAY)
-                if (timeofday in 5..11){
+                if (timeofday in 5..11) {
                     session.text = "Sáng"
                     Picasso.get().load(R.drawable.morning).into(imgsession)
-                }else if(timeofday in 12..17){
+                } else if (timeofday in 12..17) {
                     session.text = "Chiều"
                     Picasso.get().load(R.drawable.sun).into(imgsession)
-                }else if(timeofday in 18..21){
+                } else if (timeofday in 18..21) {
                     session.text = "Tối"
                     Picasso.get().load(R.drawable.moon).into(imgsession)
-                }else if (timeofday >= 22 || timeofday < 5){
+                } else if (timeofday >= 22 || timeofday < 5) {
                     session.text = "Đêm"
                     Picasso.get().load(R.drawable.latenight).into(imgsession)
                 }
@@ -107,177 +108,210 @@ class HomeFragment : Fragment(),DanhSachApdater.OnItemClickListener,RecommendAda
             }
         })
 
-        databaseReference?.child("Rate")?.addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (data in snapshot.children ){
-                    val a =""+data.child("userId").value.toString()
-                    val b =""+data.child("itemId").value.toString()
-                    val c =""+data.child("rate").value.toString()
-                    if (c != "0"){
-                        dataget += "$a $b $c\n"
-                    }
-                }
-                val okHttpClient = OkHttpClient()
-                val formBody = FormBody.Builder().add("uid", realid!!).add("data" , dataget).build()
-                val request = Request.Builder().url("http://192.168.0.101:3000/").post(formBody).build()
-                okHttpClient.newCall(request).enqueue(object  : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        activity?.runOnUiThread {
-                            Log.v("okhttp error","Network not found")
-                            e.printStackTrace()
+        databaseReference?.child("Rate")
+            ?.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (data in snapshot.children) {
+                        val a = "" + data.child("userId").value.toString()
+                        val b = "" + data.child("itemId").value.toString()
+                        val c = "" + data.child("rate").value.toString()
+                        if (c != "0") {
+                            dataget += "$a $b $c\n"
                         }
                     }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        val okdata = response.body?.string()
-                        arraydata = if (okdata == "a" || okdata == "[]"){
-                            arrayListOf(0,0)
-                        }else{
-                            okdata?.removeSurrounding("[","]")?.replace(" ","")?.split(",")?.map { it.toInt() }
-                        }
-
-                        activity?.runOnUiThread{
-
-                            recommendAdapter = RecommendAdapter(this@HomeFragment,listdatanew,listRate,requireContext(), arraydata!!)
-                            listgoiy.setHasFixedSize(true)
-                            listgoiy.isNestedScrollingEnabled =false
-                            listgoiy.adapter = recommendAdapter
-                            listgoiy.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-
-                            getData(arraydata!!)
-                            getRate()
-                            for (i in arraydata!!.indices){
-                                Log.v("arraydata $i",arraydata!![i].toString())
+                    val okHttpClient = OkHttpClient()
+                    val formBody =
+                        FormBody.Builder().add("uid", realid!!).add("data", dataget).build()
+                    val request =
+                        Request.Builder().url("http://192.168.0.101:3000/").post(formBody).build()
+                    okHttpClient.newCall(request).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            activity?.runOnUiThread {
+                                Log.v("okhttp error", "Network not found")
+                                e.printStackTrace()
                             }
                         }
 
-                    }
-                })
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Log.v("error",error.message)
-            }
-        })
+                        override fun onResponse(call: Call, response: Response) {
+                            val okdata = response.body?.string()
+                            arraydata = if (okdata == "a" || okdata == "[]") {
+                                arrayListOf(0, 0)
+                            } else {
+                                okdata?.removeSurrounding("[", "]")?.replace(" ", "")?.split(",")
+                                    ?.map { it.toInt() }
+                            }
+
+                            activity?.runOnUiThread {
+
+                                recommendAdapter = RecommendAdapter(
+                                    this@HomeFragment,
+                                    listdatanew,
+                                    listRate,
+                                    requireContext(),
+                                    arraydata!!
+                                )
+                                listgoiy.setHasFixedSize(true)
+                                listgoiy.isNestedScrollingEnabled = false
+                                listgoiy.adapter = recommendAdapter
+                                listgoiy.layoutManager = LinearLayoutManager(
+                                    context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false
+                                )
+
+                                getData(arraydata!!)
+                                getRate()
+                                for (i in arraydata!!.indices) {
+                                    Log.v("arraydata $i", arraydata!![i].toString())
+                                }
+                            }
+
+                        }
+                    })
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v("error", error.message)
+                }
+
+
+            })
+        val a: String = ""
+        val request = Request.Builder().url("http://192.168.0.101:3000/").get().build()
+
         listdata = ArrayList()
         listdatanew = ArrayList()
         listRate = ArrayList()
-        recipeAdapter = DanhSachApdater(this@HomeFragment,listdata,listRate,requireContext())
+        recipeAdapter = DanhSachApdater(this@HomeFragment, listdata, listRate, requireContext())
         listmonmoi.setHasFixedSize(true)
-        listmonmoi.isNestedScrollingEnabled =false
+        listmonmoi.isNestedScrollingEnabled = false
         listmonmoi.adapter = recipeAdapter
-        listmonmoi.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
+        listmonmoi.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         getDataOrder()
 
         return view
     }
 
-    private fun getData(arraydata : List<Int>) {
-        var userId :String
-        var ten : String
-        var nguoidang :String
-        var ngaydang :String
-        var anhbia :String
-        var gioithieu :String
-        var itemId :String
-        var congThuc :CongThuc
+    private fun getData(arraydata: List<Int>) {
+        var userId: String
+        var ten: String
+        var nguoidang: String
+        var ngaydang: String
+        var anhbia: String
+        var gioithieu: String
+        var itemId: String
+        var congThuc: CongThuc
 
-        databaseReference!!.child("Công Thức").addValueEventListener(object :ValueEventListener{
+        databaseReference!!.child("Công Thức").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listdatanew.clear()
-                for (data in snapshot.children){
+                for (data in snapshot.children) {
                     ten = "" + data.child("Tên Món Ăn").value.toString()
-                    nguoidang = "" +data.child("Người đăng").value.toString()
-                    ngaydang = "" +data.child("Ngày đăng").value.toString()
-                    anhbia = "" +data.child("Ảnh bìa").value.toString()
-                    gioithieu = "" +data.child("Giới thiệu món ăn").value.toString()
-                    itemId = "" +data.child("ItemId").value.toString()
-                    userId = "" +data.child("UserId").value.toString()
+                    nguoidang = "" + data.child("Người đăng").value.toString()
+                    ngaydang = "" + data.child("Ngày đăng").value.toString()
+                    anhbia = "" + data.child("Ảnh bìa").value.toString()
+                    gioithieu = "" + data.child("Giới thiệu món ăn").value.toString()
+                    itemId = "" + data.child("ItemId").value.toString()
+                    userId = "" + data.child("UserId").value.toString()
 
-                    for (i in arraydata.indices){
-                        if (arraydata[i].toString() == itemId){
-                            congThuc = CongThuc(anhbia,ten,gioithieu,ngaydang,nguoidang,itemId,userId)
+                    for (i in arraydata.indices) {
+                        if (arraydata[i].toString() == itemId) {
+                            congThuc = CongThuc(
+                                anhbia,
+                                ten,
+                                gioithieu,
+                                ngaydang,
+                                nguoidang,
+                                itemId,
+                                userId
+                            )
                             listdatanew.add(congThuc)
                         }
                     }
                 }
                 recommendAdapter.notifyDataSetChanged()
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Log.v("cancel",error.toString())
+                Log.v("cancel", error.toString())
             }
 
         })
     }
 
-    private fun getDataOrder(){
-        var userId :String
-        var ten : String
-        var nguoidang :String
-        var ngaydang :String
-        var anhbia :String
-        var gioithieu :String
-        var itemId :String
-        var congThuc :CongThuc
-        databaseReference!!.child("Công Thức").orderByChild("TLM").addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                listdata.clear()
-                for (data in snapshot.children){
-                    ten = "" + data.child("Tên Món Ăn").value.toString()
-                    nguoidang = "" +data.child("Người đăng").value.toString()
-                    ngaydang = "" +data.child("Ngày đăng").value.toString()
-                    anhbia = "" +data.child("Ảnh bìa").value.toString()
-                    gioithieu = "" +data.child("Giới thiệu món ăn").value.toString()
-                    itemId = "" +data.child("ItemId").value.toString()
-                    userId = "" +data.child("UserId").value.toString()
+    private fun getDataOrder() {
+        var userId: String
+        var ten: String
+        var nguoidang: String
+        var ngaydang: String
+        var anhbia: String
+        var gioithieu: String
+        var itemId: String
+        var congThuc: CongThuc
+        databaseReference!!.child("Công Thức").orderByChild("TLM")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    listdata.clear()
+                    for (data in snapshot.children) {
+                        ten = "" + data.child("Tên Món Ăn").value.toString()
+                        nguoidang = "" + data.child("Người đăng").value.toString()
+                        ngaydang = "" + data.child("Ngày đăng").value.toString()
+                        anhbia = "" + data.child("Ảnh bìa").value.toString()
+                        gioithieu = "" + data.child("Giới thiệu món ăn").value.toString()
+                        itemId = "" + data.child("ItemId").value.toString()
+                        userId = "" + data.child("UserId").value.toString()
 
-                    congThuc = CongThuc(anhbia,ten,gioithieu,ngaydang,nguoidang,itemId,userId)
-                    listdata.add(0,congThuc)
+                        congThuc =
+                            CongThuc(anhbia, ten, gioithieu, ngaydang, nguoidang, itemId, userId)
+                        listdata.add(0, congThuc)
+                    }
+                    recipeAdapter.notifyDataSetChanged()
                 }
-                recipeAdapter.notifyDataSetChanged()
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Log.v("cancel",error.toString())
-            }
 
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v("cancel", error.toString())
+                }
+
+            })
     }
 
-    private fun getRate(){
-        var userId : String
-        var itemId :String
-        var rate :String
-        databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener{
+    private fun getRate() {
+        var userId: String
+        var itemId: String
+        var rate: String
+        databaseReference?.child("Rate")?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot1: DataSnapshot) {
-                for (data in snapshot1.children){
+                for (data in snapshot1.children) {
                     userId = "" + data.child("userId").value.toString()
                     itemId = "" + data.child("itemId").value.toString()
                     rate = "" + data.child("rate").value.toString()
 
-                    listRate.add(Rate(userId,itemId,rate))
-                    Log.v("list rate home ",listRate.toString())
+                    listRate.add(Rate(userId, itemId, rate))
+                    Log.v("list rate home ", listRate.toString())
                 }
                 recommendAdapter.notifyDataSetChanged()
                 recipeAdapter.notifyDataSetChanged()
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Log.v("cancel",error.toString())
+                Log.v("cancel", error.toString())
             }
         })
     }
 
     override fun OnItemClick(position: Int) {
-        val item :CongThuc = listdata[position]
+        val item: CongThuc = listdata[position]
         val intent = Intent(context, RecipeActivity::class.java)
-        intent.putExtra("mon an",item)
-        intent.putExtra("new",false)
+        intent.putExtra("mon an", item)
+        intent.putExtra("new", false)
         startActivity(intent)
     }
 
     override fun OnItemClickNew(position: Int) {
-        val itemnew : CongThuc = listdatanew[position]
+        val itemnew: CongThuc = listdatanew[position]
         val intent = Intent(context, RecipeActivity::class.java)
-        intent.putExtra("mon an new",itemnew)
-        intent.putExtra("new",true)
+        intent.putExtra("mon an new", itemnew)
+        intent.putExtra("new", true)
         startActivity(intent)
     }
 

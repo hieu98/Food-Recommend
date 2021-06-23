@@ -25,15 +25,18 @@ import java.util.concurrent.CountDownLatch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mAuth : FirebaseAuth
-    private var databaseReference : DatabaseReference?= null
-    var database : FirebaseDatabase?= null
+    private lateinit var mAuth: FirebaseAuth
+    private var databaseReference: DatabaseReference? = null
+    var database: FirebaseDatabase? = null
     var serverResponseCode = 0
 
     private val fragment1: Fragment = HomeFragment()
     private val fragment2: Fragment = AddFragment()
     private val fragment3: Fragment = UserFragment()
     private var active = fragment1
+
+    var callback: ((String) -> Unit)? = null
+    var callback2: ((String, String) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +46,11 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
         databaseReference = database?.reference
 
-        val adddata = intent.getBooleanExtra("add data",false)
+        val adddata = intent.getBooleanExtra("add data", false)
 
         val realid = intent.getStringExtra("useridReal")
         val bun = Bundle()
-        bun.putString("realid",realid)
+        bun.putString("realid", realid)
         fragment1.arguments = bun
 
         supportFragmentManager.beginTransaction().remove(fragment3).commit()
@@ -67,28 +70,34 @@ class MainActivity : AppCompatActivity() {
 //            supportFragmentManager.beginTransaction().hide(fragment2).detach(fragment2).commit()
 //            supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
 //        }
-        menu.setItemSelected(R.id.home,true)
-        menu.setOnItemSelectedListener { id->
-            when(id){
+        menu.setItemSelected(R.id.home, true)
+        menu.setOnItemSelectedListener { id ->
+            when (id) {
                 R.id.home -> {
-                    supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
+                    supportFragmentManager.beginTransaction().hide(active).detach(fragment1)
+                        .attach(fragment1).show(fragment1).commit()
                     active = fragment1
                 }
                 R.id.add -> {
-                    supportFragmentManager.beginTransaction().hide(active).detach(fragment2).attach(fragment2).show(fragment2).commit()
+                    supportFragmentManager.beginTransaction().hide(active).detach(fragment2)
+                        .attach(fragment2).show(fragment2).commit()
                     active = fragment2
                 }
                 R.id.user -> {
-                    supportFragmentManager.beginTransaction().hide(active).detach(fragment3).attach(fragment3).show(fragment3).commit()
+                    supportFragmentManager.beginTransaction().hide(active).detach(fragment3)
+                        .attach(fragment3).show(fragment3).commit()
                     active = fragment3
                 }
             }
         }
 
-        val checkLoginGG = intent.getBooleanExtra("login google",false)
-        if (checkLoginGG){
+        val checkLoginGG = intent.getBooleanExtra("login google", false)
+
+
+        if (checkLoginGG) {
+            callback?.invoke("login google")
             val bundle = Bundle()
-            bundle.putString("login google","login google")
+            bundle.putString("login google", "login google")
             fragment3.arguments = bundle
         }
 

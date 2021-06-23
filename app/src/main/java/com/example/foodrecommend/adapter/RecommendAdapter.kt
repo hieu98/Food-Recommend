@@ -17,17 +17,24 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 
-class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongThuc>,var listRate :List<Rate>,var context: Context, var listmon :List<Int>) : RecyclerView.Adapter<RecommendAdapter.ViewHolder>(){
+class RecommendAdapter(
+    var listener: OnItemClickListener,
+    var list: List<CongThuc>,
+    var listRate: List<Rate>,
+    var context: Context,
+    var listmon: List<Int>
+) : RecyclerView.Adapter<RecommendAdapter.ViewHolder>() {
 
-    private lateinit var mAuth : FirebaseAuth
-    var databaseReference : DatabaseReference?= null
-    var database : FirebaseDatabase?= null
+    private lateinit var mAuth: FirebaseAuth
+    var databaseReference: DatabaseReference? = null
+    var database: FirebaseDatabase? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
-        for (i in listmon.indices){
-            if (listmon[i] == 0){
-                Log.v("invisi","true")
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_danhsachmon_new, parent, false)
+        for (i in listmon.indices) {
+            if (listmon[i] == 0) {
+                Log.v("invisi", "true")
                 view.isInvisible = true
             }
         }
@@ -40,35 +47,35 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
         databaseReference = database?.reference?.child("profile")?.child(mAuth.currentUser?.uid!!)
         val item = list[position]
         mAuth = FirebaseAuth.getInstance()
-        for (z in listmon.indices){
-            if (item.itemId == listmon[z].toString()){
-                Log.v("list mon $z",listmon[z].toString())
-                Picasso.get().load(item.image).resize(100,100).into(holder.img)
+        for (z in listmon.indices) {
+            if (item.itemId == listmon[z].toString()) {
+                Log.v("list mon $z", listmon[z].toString())
+                Picasso.get().load(item.image).resize(100, 100).into(holder.img)
                 holder.tenmon.text = item.ten
                 holder.nguoidang.text = item.nguoidang
-                databaseReference?.addValueEventListener(object :ValueEventListener{
+                databaseReference?.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if(listRate.isNotEmpty()){
-                            for (i in listRate.indices){
-                                if (item.itemId == listRate[i].itemId && snapshot.child("useridReal").value.toString() == listRate[i].userId){
+                        if (listRate.isNotEmpty()) {
+                            for (i in listRate.indices) {
+                                if (item.itemId == listRate[i].itemId && snapshot.child("useridReal").value.toString() == listRate[i].userId) {
                                     holder.rate.rating = listRate[i].rate.toFloat()
-                                    Log.v("Rate-item recom",listRate[i].rate)
+                                    Log.v("Rate-item recom", listRate[i].rate)
                                     break
-                                }else {
+                                } else {
                                     holder.rate.rating = 0.0f
                                 }
                             }
-                        }else{
+                        } else {
                             holder.rate.rating = 0.0f
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Log.v("cancel",error.toString())
+                        Log.v("cancel", error.toString())
                     }
 
                 })
-            }else{
+            } else {
                 holder.itemView.visibility = View.GONE
             }
         }
@@ -86,11 +93,12 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
 
     override fun getItemCount() = list.size
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view),View.OnClickListener {
-        val img : ImageView = view.findViewById(R.id.imgv_dsct)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+        val img: ImageView = view.findViewById(R.id.imgv_dsct)
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
         val rate = view.findViewById<RatingBar>(R.id.rate)
+
         init {
             view.setOnClickListener(this)
         }
@@ -101,10 +109,9 @@ class RecommendAdapter( var listener: OnItemClickListener, var list: List<CongTh
                 listener.OnItemClickNew(position)
             }
         }
-//        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
-//        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
     }
-    interface OnItemClickListener{
+
+    interface OnItemClickListener {
         fun OnItemClickNew(position: Int)
     }
 }

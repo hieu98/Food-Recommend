@@ -18,15 +18,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 
-class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThuc>,var listRate :List<Rate>,var context: Context) : RecyclerView.Adapter<DanhSachApdater.ViewHolder>(){
+class DanhSachApdater(
+    var listener: OnItemClickListener,
+    var list: List<CongThuc>,
+    var listRate: List<Rate>,
+    var context: Context
+) : RecyclerView.Adapter<DanhSachApdater.ViewHolder>() {
 
-    private lateinit var mAuth : FirebaseAuth
-    var databaseReference : DatabaseReference?= null
-    var database : FirebaseDatabase?= null
-    private lateinit var arrayData :ArrayList<String>
+    private lateinit var mAuth: FirebaseAuth
+    var databaseReference: DatabaseReference? = null
+    var database: FirebaseDatabase? = null
+    private lateinit var arrayData: ArrayList<String>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DanhSachApdater.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_danhsachmon_new,parent,false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_danhsachmon_new, parent, false)
         return ViewHolder(view)
     }
 
@@ -37,29 +43,29 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
         val item = list[position]
         arrayData = ArrayList()
         mAuth = FirebaseAuth.getInstance()
-            Picasso.get().load(item.image).resize(100,100).into(holder.img)
-            holder.tenmon.text = item.ten
-            holder.nguoidang.text = item.nguoidang
-        databaseReference?.addValueEventListener(object :ValueEventListener{
+        Picasso.get().load(item.image).resize(100, 100).into(holder.img)
+        holder.tenmon.text = item.ten
+        holder.nguoidang.text = item.nguoidang
+        databaseReference?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val usid = "" + snapshot.child("useridReal").value.toString()
-                if(listRate.isNotEmpty()){
-                    for (i in listRate.indices){
-                        if (item.itemId == listRate[i].itemId && usid == listRate[i].userId){
+                if (listRate.isNotEmpty()) {
+                    for (i in listRate.indices) {
+                        if (item.itemId == listRate[i].itemId && usid == listRate[i].userId) {
                             holder.rate.rating = listRate[i].rate.toFloat()
-                            Log.v("Rate-item",listRate[i].rate)
+                            Log.v("Rate-item", listRate[i].rate)
                             break
-                        }else {
+                        } else {
                             holder.rate.rating = 0.0f
                         }
                     }
-                }else{
+                } else {
                     holder.rate.rating = 0.0f
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.v("cancel",error.toString())
+                Log.v("cancel", error.toString())
             }
 
         })
@@ -79,11 +85,12 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
 
     override fun getItemCount() = list.size
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view),View.OnClickListener {
-        val img : ImageView = view.findViewById(R.id.imgv_dsct)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+        val img: ImageView = view.findViewById(R.id.imgv_dsct)
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
         val rate = view.findViewById<RatingBar>(R.id.rate)
+
         init {
             view.setOnClickListener(this)
         }
@@ -97,7 +104,8 @@ class DanhSachApdater( var listener: OnItemClickListener, var list: List<CongThu
 //        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
 //        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
     }
-    interface OnItemClickListener{
+
+    interface OnItemClickListener {
         fun OnItemClick(position: Int)
     }
 }
