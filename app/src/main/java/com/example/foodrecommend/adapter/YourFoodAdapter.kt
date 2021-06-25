@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
+import com.example.foodrecommend.activity.FixRecipeActivity
 import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
@@ -50,9 +51,13 @@ class YourFoodAdapter(
         Picasso.get().load(item.image).resize(100, 100).into(holder.img)
         holder.tenmon.text = item.ten
         holder.nguoidang.text = item.nguoidang
-        holder.btnsua.setOnClickListener {
 
+        holder.btnsua.setOnClickListener {
+            val intent = Intent(context, FixRecipeActivity::class.java)
+            intent.putExtra("congthucold",item)
+            context.startActivity(intent)
         }
+
         holder.btnxoa.setOnClickListener {
             showDialog()
             databaseReference?.addValueEventListener(object : ValueEventListener {

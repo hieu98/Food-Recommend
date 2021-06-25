@@ -264,7 +264,7 @@ class AddFragment : Fragment() {
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     if (p0!!.areAllPermissionsGranted()) {
-                        showDialog(requestCode)
+                        shhowDialog(requestCode)
                     } else
                         Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT)
                             .show()
@@ -398,7 +398,7 @@ class AddFragment : Fragment() {
         }
     }
 
-    private fun showDialog(requestCode: Int) {
+    private fun shhowDialog(requestCode: Int) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Ảnh")
         builder.setMessage("Bạn muốn chụp ảnh mới hay chọn ảnh trong máy ?")

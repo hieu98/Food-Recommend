@@ -17,10 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodRecommend.Fullscreen">
+        <activity android:name=".activity.FixRecipeActivity"></activity>
         <activity android:name=".activity.YourFoodActivity">
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".activity.MainActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity" />
         </activity>
         <activity
             android:name=".activity.MainActivity"

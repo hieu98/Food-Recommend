@@ -64,14 +64,14 @@ class UserFragment : Fragment() {
             currentUserDb?.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val usid = "" + snapshot.child("useridReal").value.toString()
-                    if (usid != "") {
+                    if (usid != "null") {
                         inten.putExtra("uid", usid)
                         Log.v("usid", usid)
                     } else {
                         Log.v("sửa uid", "true")
                         databaseReference?.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                if (usid != "") {
+                                if (usid == "null") {
                                     val countUser = snapshot.childrenCount
                                     currentUserDb.child("useridReal").setValue(countUser)
                                 }
@@ -101,18 +101,17 @@ class UserFragment : Fragment() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     name.text = snapshot.child("name").value.toString()
                     val usid = "" + snapshot.child("useridReal").value.toString()
-                    if (usid != "") {
+                    if (usid != "null") {
                         inten.putExtra("uid", usid)
                         Log.v("usid", usid)
                     } else {
                         Log.v("sửa uid", "true")
                         databaseReference?.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                if (usid != "") {
+                                if(usid == "null"){
                                     val countUser = snapshot.childrenCount
                                     userref.child("useridReal").setValue(countUser)
                                 }
-
                             }
 
                             override fun onCancelled(error: DatabaseError) {

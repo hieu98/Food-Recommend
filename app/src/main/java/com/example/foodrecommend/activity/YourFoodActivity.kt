@@ -59,9 +59,9 @@ class YourFoodActivity : AppCompatActivity(), YourFoodAdapter.OnItemClickListene
         var gioithieu: String
         var itemId: String
         var congThuc: CongThuc
-        list.clear()
         databaseReference!!.child("Công Thức").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                list.clear()
                 for (data in snapshot.children) {
                     ten = "" + data.child("Tên Món Ăn").value.toString()
                     nguoidang = "" + data.child("Người đăng").value.toString()

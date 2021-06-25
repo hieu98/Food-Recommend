@@ -42,5 +42,6 @@
     <string name="ngaydangmon">Ngày đăng món :</string>
     <string name="sua_mon">Sửa món</string>
     <string name="xoa_mon">Xóa món</string>
+    <string name="sua_anh">Sửa ảnh</string>
     <!--    <string name="default_web_client_id">Default</string>-->
 </resources>

@@ -127,9 +127,6 @@ class RecipeActivity : AppCompatActivity() {
         listCachLam = ArrayList()
         nguyenLieuAdapter = NguyenLieuAdapter(listNguyenLieu, this)
         cachLamAdapter = CachLamAdapter(listCachLam, this)
-        cachLamAdapter.callback = {
-            5
-        }
 
         lv_nguyenlieu.setHasFixedSize(true)
         lv_nguyenlieu.isNestedScrollingEnabled = false
