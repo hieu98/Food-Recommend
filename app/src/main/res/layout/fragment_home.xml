@@ -65,7 +65,7 @@
                             app:layout_constraintStart_toStartOf="@id/tv_tg"/>
                         <ImageView
                             android:layout_marginTop="5dp"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginStart="5dp"
                             android:src="@drawable/sunny"
                             android:id="@+id/imgv_tt"
                             android:layout_width="50dp"

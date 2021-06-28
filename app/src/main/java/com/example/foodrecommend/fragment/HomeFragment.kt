@@ -1,7 +1,11 @@
 package com.example.foodrecommend.fragment
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.icu.util.Calendar
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -12,19 +16,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.adapter.DanhSachApdater
 import com.example.foodrecommend.adapter.RecommendAdapter
+import com.example.foodrecommend.api.WeatherViewModel
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
 import okhttp3.*
 import java.io.IOException
@@ -46,6 +60,15 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
     private var storage: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
 
+    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var mLastLocation: Location? = null
+    private lateinit var myWeatherViewModel: WeatherViewModel
+    private lateinit var pref: SharedPreferences
+
+    companion object {
+        val key = "6a0dc7a1149d4ec68f1a4f3a67e2d318"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -56,32 +79,37 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         savedInstanceState: Bundle?
     ): View? {
 
+        pref = context?.getSharedPreferences("PREF", AppCompatActivity.MODE_PRIVATE)!!
         mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage!!.reference
         databaseReference = database?.reference
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         var arraydata: List<Int>?
 
         val bundle = arguments
         val realid = bundle?.getString("realid")
         var dataget = ""
-//        bundle?.getString("data get")
-//        if (dataget == null){
-//            dataget = "a"
-//        }
-
 
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val time = view.findViewById<TextView>(R.id.tv_tg)
-//        val temperature = view.findViewById<TextView>(R.id.tv_tt)
+        val temperature = view.findViewById<TextView>(R.id.tv_tt)
         val session = view.findViewById<TextView>(R.id.txt_thoigian)
         val imgsession = view.findViewById<ImageView>(R.id.imgv_tg)
-//        val weather = view.findViewById<TextView>(R.id.txt_thoitiet)
-//        val imgweather = view.findViewById<ImageView>(R.id.imgv_tt)
+        val textweather = view.findViewById<TextView>(R.id.txt_thoitiet)
+        val imgweather = view.findViewById<ImageView>(R.id.imgv_tt)
         val listgoiy = view.findViewById<RecyclerView>(R.id.listgoiy)
         val listmonmoi = view.findViewById<RecyclerView>(R.id.listmonmoi)
+
+        checkPermission(temperature,textweather, imgweather)
+//        val temp = pref.getInt("temp",0)
+//        val description = pref.getString("description", "")
+//        if (temp == 0 && description == ""){
+//
+//        }
+
         val handler = Handler(Looper.getMainLooper())
         handler.post(object : Runnable {
             override fun run() {
@@ -176,8 +204,6 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
 
 
             })
-        val a: String = ""
-        val request = Request.Builder().url("http://192.168.0.101:3000/").get().build()
 
         listdata = ArrayList()
         listdatanew = ArrayList()
@@ -190,6 +216,50 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         getDataOrder()
 
         return view
+    }
+
+    private fun checkPermission(texweather : TextView, textDescriptionWeather : TextView, img : ImageView){
+        val withListener = Dexter.withActivity(activity)
+            .withPermissions(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            .withListener(object : MultiplePermissionsListener {
+                @SuppressLint("MissingPermission")
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                    if (p0!!.areAllPermissionsGranted()) {
+                        myWeatherViewModel = ViewModelProviders.of(requireActivity()).get(WeatherViewModel::class.java)
+                        mFusedLocationProviderClient!!.lastLocation
+                            .addOnCompleteListener(requireActivity()) { task ->
+                                if (task.isSuccessful && task.result != null) {
+                                    mLastLocation = task.result
+                                    myWeatherViewModel.getApiWeather(mLastLocation?.latitude!!, mLastLocation?.longitude!!, key)
+                                    myWeatherViewModel.requestWeather.observe(requireActivity(),{
+                                        it.run {
+                                            texweather.text = this.data[0].temp.toString()
+                                            weatherDes(this.data[0].weather.code, textDescriptionWeather)
+                                            val code = this.data[0].weather.icon
+                                            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(img)
+                                            Log.v("texweather", this.data[0].temp.toString())
+                                            pref.edit().putInt("temp",this.data[0].temp ).apply()
+                                            pref.edit().putString("description",this.data[0].weather.description ).apply()
+                                        }
+                                    })
+                                }
+                            }
+                    } else
+                        Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT)
+                            .show()
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<com.karumi.dexter.listener.PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    p1!!.continuePermissionRequest()
+                }
+
+            }).check()
     }
 
     private fun getData(arraydata: List<Int>) {
@@ -313,6 +383,125 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         intent.putExtra("mon an new", itemnew)
         intent.putExtra("new", true)
         startActivity(intent)
+    }
+
+    private fun weatherDes(code : Int, text : TextView){
+        when (code){
+            200 -> {
+                text.text = "Có giông kèm mưa nhẹ"
+            }
+            201 -> {
+                text.text = "Có giông kèm mưa"
+            }
+            202 -> {
+                text.text = "Có giông kèm mưa lớn"
+            }
+            230 -> {
+                text.text = "Bão có mưa phùn nhẹ"
+            }
+            231 -> {
+                text.text = "Bão có mưa phùn"
+            }
+            232 -> {
+                text.text = "Bão có mưa phùn lớn"
+            }
+            233 -> {
+                text.text = "Có sấm sét kèm theo mưa đá"
+            }
+            300 -> {
+                text.text = "Mưa phùn nhẹ"
+            }
+            301 -> {
+                text.text = "Mưa phùn"
+            }
+            302 -> {
+                text.text = "Mưa phùn nặng hạt"
+            }
+            500 -> {
+                text.text = "Mưa nhỏ"
+            }
+            501-> {
+                text.text = "Mưa vừa phải"
+            }
+            502 -> {
+                text.text = "Mưa nặng hạt"
+            }
+            511 -> {
+                text.text = "Mưa đóng băng"
+            }
+            520 -> {
+                text.text = "Mưa rào nhẹ"
+            }
+            521 -> {
+                text.text = "Mưa rào nhẹ"
+            }
+            522 -> {
+                text.text = "Mưa rào"
+            }
+            600 -> {
+                text.text = "Tuyết nhẹ"
+            }
+            601 -> {
+                text.text = "Tuyết"
+            }
+            602 -> {
+                text.text = "Tuyết rơi nhiều"
+            }
+            610 -> {
+                text.text = "Kết hợp tuyết / mưa"
+            }
+            611 -> {
+                text.text = "Mưa tuyết"
+            }
+            612 -> {
+                text.text = "Mưa tuyết dày đặc"
+            }
+            621 -> {
+                text.text = "Mưa tuyết"
+            }
+            622 -> {
+                text.text = "Mưa tuyết dày đặc"
+            }
+            623 -> {
+                text.text = "Gió lớn"
+            }
+            700 -> {
+                text.text = "Sương mù"
+            }
+            711 -> {
+                text.text = "Khói"
+            }
+            721 -> {
+                text.text = "Sương mù"
+            }
+            731 -> {
+                text.text = "Cát / bụi"
+            }
+            741 -> {
+                text.text = "Sương mù"
+            }
+            751 -> {
+                text.text = "Sương mù đóng băng"
+            }
+            800 -> {
+                text.text = "Bầu trời quang đãng"
+            }
+            801 -> {
+                text.text = "Vài đám mây"
+            }
+            802 -> {
+                text.text = "Mây rải rác"
+            }
+            803 -> {
+                text.text = "Mây tan vỡ"
+            }
+            804 -> {
+                text.text = "Mây u ám"
+            }
+            900 -> {
+                text.text = "Lượng mưa không xác định"
+            }
+        }
     }
 
 }
