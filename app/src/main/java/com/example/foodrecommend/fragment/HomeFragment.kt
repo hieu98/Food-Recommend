@@ -6,10 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.icu.util.Calendar
 import android.location.Location
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +37,9 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.*
 import java.io.IOException
 import java.time.LocalDateTime
@@ -64,6 +64,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
     private var mLastLocation: Location? = null
     private lateinit var myWeatherViewModel: WeatherViewModel
     private lateinit var pref: SharedPreferences
+    private lateinit var cout : CountDownTimer
 
     companion object {
         val key = "6a0dc7a1149d4ec68f1a4f3a67e2d318"
@@ -103,15 +104,31 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         val listgoiy = view.findViewById<RecyclerView>(R.id.listgoiy)
         val listmonmoi = view.findViewById<RecyclerView>(R.id.listmonmoi)
 
-        checkPermission(temperature,textweather, imgweather)
-//        val temp = pref.getInt("temp",0)
-//        val description = pref.getString("description", "")
-//        if (temp == 0 && description == ""){
-//
-//        }
+        val temp = pref.getInt("temp" , 0)
+        val code = pref.getString("code", "")
+        val des = pref.getString("des", "")
+        if (temp == 0 && code == "" && des == ""){
+            checkPermission(temperature,textweather, imgweather)
+        }else{
+            temperature.text = temp.toString()
+            textweather.text = des
+            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(imgweather)
+            cout = object : CountDownTimer(10000,1000){
+                override fun onTick(millisUntilFinished: Long) {
+                }
+
+                override fun onFinish() {
+                    checkPermission(temperature,textweather, imgweather)
+                    Log.v("cout", "true")
+                    cout.start()
+                }
+
+            }.start()
+        }
 
         val handler = Handler(Looper.getMainLooper())
         handler.post(object : Runnable {
+            @SuppressLint("SetTextI18n")
             override fun run() {
                 val current = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("HH:mm")
@@ -218,6 +235,11 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         return view
     }
 
+    override fun onStop() {
+        super.onStop()
+        cout.cancel()
+    }
+
     private fun checkPermission(texweather : TextView, textDescriptionWeather : TextView, img : ImageView){
         val withListener = Dexter.withActivity(activity)
             .withPermissions(
@@ -236,13 +258,17 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                                     myWeatherViewModel.getApiWeather(mLastLocation?.latitude!!, mLastLocation?.longitude!!, key)
                                     myWeatherViewModel.requestWeather.observe(requireActivity(),{
                                         it.run {
-                                            texweather.text = this.data[0].temp.toString()
-                                            weatherDes(this.data[0].weather.code, textDescriptionWeather)
+                                            val temp = pref.getInt("temp" , 0)
+                                            val codeold = pref.getString("code", "")
                                             val code = this.data[0].weather.icon
-                                            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(img)
-                                            Log.v("texweather", this.data[0].temp.toString())
-                                            pref.edit().putInt("temp",this.data[0].temp ).apply()
-                                            pref.edit().putString("description",this.data[0].weather.description ).apply()
+                                             Log.v("texweather", this.data[0].temp.toString())
+                                            if (temp != this.data[0].temp || codeold != code){
+                                                texweather.text = this.data[0].temp.toString()
+                                                weatherDes(this.data[0].weather.code, textDescriptionWeather)
+                                                Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(img)
+                                                pref.edit().putInt("temp",this.data[0].temp ).apply()
+                                                pref.edit().putString("code", code).apply()
+                                            }
                                         }
                                     })
                                 }
@@ -385,121 +411,200 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         startActivity(intent)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun weatherDes(code : Int, text : TextView){
         when (code){
             200 -> {
-                text.text = "Có giông kèm mưa nhẹ"
+                val a = "Có giông kèm mưa nhẹ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             201 -> {
-                text.text = "Có giông kèm mưa"
+                val a = "Có giông kèm mưa"
+                text.text = a
+                pref.edit().putString("des", a).apply()
+
             }
             202 -> {
-                text.text = "Có giông kèm mưa lớn"
+                val a = "Có giông kèm mưa lớn"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             230 -> {
-                text.text = "Bão có mưa phùn nhẹ"
+                val a ="Bão có mưa phùn nhẹ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             231 -> {
-                text.text = "Bão có mưa phùn"
+                val a = "Bão có mưa phùn"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             232 -> {
-                text.text = "Bão có mưa phùn lớn"
+                val a = "Bão có mưa phùn lớn"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             233 -> {
-                text.text = "Có sấm sét kèm theo mưa đá"
+                val a = "Có sấm sét kèm theo mưa đá"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             300 -> {
-                text.text = "Mưa phùn nhẹ"
+                val a = "Mưa phùn nhẹ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             301 -> {
-                text.text = "Mưa phùn"
+                val a = "Mưa phùn"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             302 -> {
-                text.text = "Mưa phùn nặng hạt"
+                val a = "Mưa phùn nặng hạt"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             500 -> {
-                text.text = "Mưa nhỏ"
+                val a ="Mưa nhỏ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             501-> {
-                text.text = "Mưa vừa phải"
+                val a = "Mưa vừa phải"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             502 -> {
-                text.text = "Mưa nặng hạt"
+                val a = "Mưa nặng hạt"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             511 -> {
-                text.text = "Mưa đóng băng"
+                val a = "Mưa đóng băng"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             520 -> {
-                text.text = "Mưa rào nhẹ"
+                val a ="Mưa rào nhẹ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             521 -> {
-                text.text = "Mưa rào nhẹ"
+                val a = "Mưa rào nhẹ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             522 -> {
-                text.text = "Mưa rào"
+                val a = "Mưa rào"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             600 -> {
-                text.text = "Tuyết nhẹ"
+                val a = "Tuyết nhẹ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             601 -> {
-                text.text = "Tuyết"
+                val a = "Tuyết"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             602 -> {
-                text.text = "Tuyết rơi nhiều"
+                val a = "Tuyết rơi nhiều"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             610 -> {
-                text.text = "Kết hợp tuyết / mưa"
+                val a = "Kết hợp tuyết / mưa"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             611 -> {
-                text.text = "Mưa tuyết"
+                val a = "Mưa tuyết"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             612 -> {
-                text.text = "Mưa tuyết dày đặc"
+                val a = "Mưa tuyết dày đặc"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             621 -> {
-                text.text = "Mưa tuyết"
+                val a = "Mưa tuyết"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             622 -> {
-                text.text = "Mưa tuyết dày đặc"
+                val a = "Mưa tuyết dày đặc"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             623 -> {
-                text.text = "Gió lớn"
+                val a = "Gió lớn"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             700 -> {
-                text.text = "Sương mù"
+                val a = "Sương mù"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             711 -> {
-                text.text = "Khói"
+                val a = "Khói"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             721 -> {
-                text.text = "Sương mù"
+                val a = "Sương mù"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             731 -> {
-                text.text = "Cát / bụi"
+                val a = "Cát / bụi"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             741 -> {
-                text.text = "Sương mù"
+                val a = "Sương mù"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             751 -> {
-                text.text = "Sương mù đóng băng"
+                val a = "Sương mù đóng băng"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             800 -> {
-                text.text = "Bầu trời quang đãng"
+                val a =  "Bầu trời quang đãng"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             801 -> {
-                text.text = "Vài đám mây"
+                val a = "Vài đám mây"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             802 -> {
-                text.text = "Mây rải rác"
+                val a = "Mây rải rác"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             803 -> {
-                text.text = "Mây tan vỡ"
+
+                val a = "Mây tan vỡ"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             804 -> {
-                text.text = "Mây u ám"
+                val a = "Mây u ám"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
             900 -> {
-                text.text = "Lượng mưa không xác định"
+                val a = "Lượng mưa không xác định"
+                text.text = a
+                pref.edit().putString("des", a).apply()
             }
         }
     }

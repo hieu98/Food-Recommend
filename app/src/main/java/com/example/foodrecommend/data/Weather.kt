@@ -1,6 +1,6 @@
 package com.example.foodrecommend.data
 
-class Weather(
+data class Weather(
     val count: Int,
     val `data`: List<Data>
 )
@@ -12,7 +12,7 @@ data class Data(
     val clouds: Int,
     val country_code: String,
     val datetime: String,
-    val dewpt: Int,
+    val dewpt: Double,
     val dhi: Double,
     val dni: Double,
     val elev_angle: Double,
@@ -27,7 +27,7 @@ data class Data(
     val rh: Int,
     val slp: Int,
     val snow: Int,
-    val solar_rad: Double,
+    val solar_rad: Float,
     val state_code: String,
     val station: String,
     val sunrise: String,
