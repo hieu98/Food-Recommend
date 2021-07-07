@@ -27,7 +27,7 @@ data class Data(
     val rh: Int,
     val slp: Int,
     val snow: Int,
-    val solar_rad: Float,
+    val solar_rad: Double,
     val state_code: String,
     val station: String,
     val sunrise: String,
@@ -41,7 +41,7 @@ data class Data(
     val wind_cdir: String,
     val wind_cdir_full: String,
     val wind_dir: Int,
-    val wind_spd: Double
+    val wind_spd: Int
 )
 
 data class WeatherX(

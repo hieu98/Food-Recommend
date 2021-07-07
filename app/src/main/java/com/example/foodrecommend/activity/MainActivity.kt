@@ -1,26 +1,15 @@
 package com.example.foodrecommend.activity
 
-import android.content.*
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.foodrecommend.R
 import com.example.foodrecommend.fragment.AddFragment
 import com.example.foodrecommend.fragment.HomeFragment
-import com.example.foodrecommend.fragment.SearchFragment
 import com.example.foodrecommend.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
-import okhttp3.*
-import okhttp3.internal.notifyAll
-import okhttp3.internal.wait
-import java.io.*
-import java.util.concurrent.CountDownLatch
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private var active = fragment1
 
     var callback: ((String) -> Unit)? = null
-    var callback2: ((String, String) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +33,6 @@ class MainActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         databaseReference = database?.reference
-
-        val adddata = intent.getBooleanExtra("add data", false)
 
         val realid = intent.getStringExtra("useridReal")
         val bun = Bundle()
@@ -64,12 +50,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().hide(fragment2).commit()
         supportFragmentManager.beginTransaction().hide(fragment3).commit()
 
-//        if (adddata){
-//            supportFragmentManager.beginTransaction().hide(fragment4).detach(fragment4).commit()
-//            supportFragmentManager.beginTransaction().hide(fragment3).detach(fragment3).commit()
-//            supportFragmentManager.beginTransaction().hide(fragment2).detach(fragment2).commit()
-//            supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
-//        }
         menu.setItemSelected(R.id.home, true)
         menu.setOnItemSelectedListener { id ->
             when (id) {

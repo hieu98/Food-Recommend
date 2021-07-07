@@ -15,7 +15,6 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,9 +22,11 @@ import com.example.foodrecommend.R
 import com.example.foodrecommend.activity.RecipeActivity
 import com.example.foodrecommend.adapter.DanhSachApdater
 import com.example.foodrecommend.adapter.RecommendAdapter
+import com.example.foodrecommend.api.API
 import com.example.foodrecommend.api.WeatherViewModel
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
+import com.example.foodrecommend.data.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
@@ -37,10 +38,11 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.*
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -65,6 +67,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
     private lateinit var myWeatherViewModel: WeatherViewModel
     private lateinit var pref: SharedPreferences
     private lateinit var cout : CountDownTimer
+    private var job : Job? = null
 
     companion object {
         val key = "6a0dc7a1149d4ec68f1a4f3a67e2d318"
@@ -74,6 +77,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         super.onCreate(savedInstanceState)
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,35 +100,11 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
 
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val time = view.findViewById<TextView>(R.id.tv_tg)
-        val temperature = view.findViewById<TextView>(R.id.tv_tt)
         val session = view.findViewById<TextView>(R.id.txt_thoigian)
         val imgsession = view.findViewById<ImageView>(R.id.imgv_tg)
-        val textweather = view.findViewById<TextView>(R.id.txt_thoitiet)
-        val imgweather = view.findViewById<ImageView>(R.id.imgv_tt)
+
         val listgoiy = view.findViewById<RecyclerView>(R.id.listgoiy)
         val listmonmoi = view.findViewById<RecyclerView>(R.id.listmonmoi)
-
-        val temp = pref.getInt("temp" , 0)
-        val code = pref.getString("code", "")
-        val des = pref.getString("des", "")
-        if (temp == 0 && code == "" && des == ""){
-            checkPermission(temperature,textweather, imgweather)
-        }else{
-            temperature.text = temp.toString()
-            textweather.text = des
-            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(imgweather)
-            cout = object : CountDownTimer(10000,1000){
-                override fun onTick(millisUntilFinished: Long) {
-                }
-
-                override fun onFinish() {
-                    checkPermission(temperature,textweather, imgweather)
-                    Log.v("cout", "true")
-                    cout.start()
-                }
-
-            }.start()
-        }
 
         val handler = Handler(Looper.getMainLooper())
         handler.post(object : Runnable {
@@ -235,9 +215,61 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         return view
     }
 
+    @SuppressLint("SetTextI18n")
+    override fun onResume() {
+        super.onResume()
+        val temperature = view?.findViewById<TextView>(R.id.tv_tt)
+        val textweather = view?.findViewById<TextView>(R.id.txt_thoitiet)
+        val imgweather = view?.findViewById<ImageView>(R.id.imgv_tt)
+
+        val temp = pref.getInt("temp" , 0)
+        val code = pref.getString("code", "")
+        val des = pref.getString("des", "")
+        if (temp == 0 && code == "" && des == ""){
+            checkPermission(temperature!!,textweather!!, imgweather!!)
+        }else{
+            temperature?.text = "$temp°C"
+            textweather?.text = des
+            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(imgweather)
+            cout = object : CountDownTimer(10000,1000){
+                override fun onTick(millisUntilFinished: Long) {
+                }
+
+                override fun onFinish() {
+                    checkPermission(temperature!!,textweather!!, imgweather!!)
+                    Log.v("cout", "true")
+                    cout.start()
+                }
+            }.start()
+        }
+    }
+
+    private suspend fun fetchWeather (latitude : Double, longitude : Double) : Weather{
+        return withContext(Dispatchers.IO) {
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://api.weatherbit.io/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .build()
+                .create(API::class.java)
+            retrofit.getWeather2(latitude, longitude, key)
+        }
+    }
+
+    suspend fun fetchAndShowWeather(latitude : Double, longitude : Double){
+        val weather = fetchWeather(latitude,longitude)
+        showWeather(weather)
+    }
+
+    private fun showWeather(weather: Weather) {
+        Log.v("show temp", weather.data[0].temp.toString())
+    }
+
     override fun onStop() {
         super.onStop()
         cout.cancel()
+        //job?.cancel()
+
     }
 
     private fun checkPermission(texweather : TextView, textDescriptionWeather : TextView, img : ImageView){
@@ -247,7 +279,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
             .withListener(object : MultiplePermissionsListener {
-                @SuppressLint("MissingPermission")
+                @SuppressLint("MissingPermission", "SetTextI18n")
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     if (p0!!.areAllPermissionsGranted()) {
                         myWeatherViewModel = ViewModelProviders.of(requireActivity()).get(WeatherViewModel::class.java)
@@ -261,9 +293,13 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                                             val temp = pref.getInt("temp" , 0)
                                             val codeold = pref.getString("code", "")
                                             val code = this.data[0].weather.icon
+                                            job = GlobalScope.launch {
+                                                Log.v("corroo", "true")
+                                                fetchAndShowWeather(mLastLocation?.latitude!!, mLastLocation?.longitude!!)
+                                            }
                                              Log.v("texweather", this.data[0].temp.toString())
                                             if (temp != this.data[0].temp || codeold != code){
-                                                texweather.text = this.data[0].temp.toString()
+                                                texweather.text = this.data[0].temp.toString() + "°C"
                                                 weatherDes(this.data[0].weather.code, textDescriptionWeather)
                                                 Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(img)
                                                 pref.edit().putInt("temp",this.data[0].temp ).apply()

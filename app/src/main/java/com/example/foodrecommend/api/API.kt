@@ -14,4 +14,11 @@ interface API {
         @Query("lon") lon: Double,
         @Query("key") key: String
     ): Observable<Weather>
+
+    @GET("v2.0/current")
+    suspend fun getWeather2(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("key") key: String
+    ): Weather
 }
