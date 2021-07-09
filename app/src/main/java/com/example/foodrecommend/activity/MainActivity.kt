@@ -73,13 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         val checkLoginGG = intent.getBooleanExtra("login google", false)
 
-
-        if (checkLoginGG) {
-            callback?.invoke("login google")
-            val bundle = Bundle()
-            bundle.putString("login google", "login google")
-            fragment3.arguments = bundle
-        }
+        if (checkLoginGG){ callback?.invoke("login google") }
 
     }
 

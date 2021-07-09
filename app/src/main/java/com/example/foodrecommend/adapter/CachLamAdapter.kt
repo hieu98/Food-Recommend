@@ -13,12 +13,12 @@ import com.squareup.picasso.Picasso
 
 class CachLamAdapter(var list: List<CachLam>, var context: Context) : RecyclerView.Adapter<CachLamAdapter.ViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CachLamAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_show_cachlam,parent,false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: CachLamAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
         holder.stt.text = item.stt
         holder.cachlam.text = item.buoc

@@ -15,13 +15,13 @@ class NguyenLieuAdapter(var list: List<NguyenLieu>, var context: Context) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): NguyenLieuAdapter.ViewHolder {
+    ): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_show_nguyenlieu, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: NguyenLieuAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
         holder.soLuong.text = item.soLuong
         holder.tenNguyenLieu.text = item.tenNguyenLieu

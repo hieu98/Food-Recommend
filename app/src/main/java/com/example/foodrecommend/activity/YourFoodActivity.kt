@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodrecommend.R
-import com.example.foodrecommend.adapter.DanhSachApdater
 import com.example.foodrecommend.adapter.YourFoodAdapter
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate

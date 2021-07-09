@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.data.CachLam
 import com.squareup.picasso.Picasso
-import org.greenrobot.eventbus.EventBus
 
 class FixCachLamAdapter(var list: MutableList<CachLam>, var context: Context) :RecyclerView.Adapter<FixCachLamAdapter.ViewHolder>() {
 

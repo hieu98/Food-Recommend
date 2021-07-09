@@ -4,7 +4,6 @@ import com.example.foodrecommend.data.Weather
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.security.Key
 
 interface API {
 

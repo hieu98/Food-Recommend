@@ -40,6 +40,7 @@ class UserFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         databaseReference = database?.reference!!.child("profile")
+        val inten = Intent(context, YourFoodActivity::class.java)
 
         val email = view.findViewById<TextView>(R.id.email)
         val name = view.findViewById<TextView>(R.id.name)
@@ -48,82 +49,76 @@ class UserFragment : Fragment() {
         val btn_your = view.findViewById<Button>(R.id.your_monan)
         mainActivity = MainActivity()
         mainActivity.callback = {
+
             if (it == "login google") {
-                val a = 1
+                val currentUser = mAuth.currentUser
+                val currentUserDb = databaseReference?.child(currentUser?.uid!!)
+                currentUserDb?.child("name")?.setValue(currentUser?.displayName)
+                currentUserDb?.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val usid = "" + snapshot.child("useridReal").value.toString()
+                        if (usid != "null") {
+                            inten.putExtra("uid", usid)
+                            Log.v("usid", usid)
+                        } else {
+                            Log.v("sửa uid", "true")
+                            databaseReference?.addValueEventListener(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (usid == "null") {
+                                        val countUser = snapshot.childrenCount
+                                        currentUserDb.child("useridReal").setValue(countUser)
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Log.v("Lỗi không thêm id user", "Lỗi không thêm id user")
+                                }
+                            })
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.v("error", error.message)
+                    }
+
+                })
+                name.text = currentUser?.displayName
+                email.text = currentUser?.email
+                Picasso.get().load(currentUser?.photoUrl).into(img)
+
+            } else {
+                val user = mAuth.currentUser
+                val userref = databaseReference?.child(user?.uid!!)
+                email.text = user?.email
+                userref?.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        name.text = snapshot.child("name").value.toString()
+                        val usid = "" + snapshot.child("useridReal").value.toString()
+                        if (usid != "null") {
+                            inten.putExtra("uid", usid)
+                            Log.v("usid", usid)
+                        } else {
+                            Log.v("sửa uid", "true")
+                            databaseReference?.addValueEventListener(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if(usid == "null"){
+                                        val countUser = snapshot.childrenCount
+                                        userref.child("useridReal").setValue(countUser)
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Log.v("Lỗi không thêm id user", "Lỗi không thêm id user")
+                                }
+                            })
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
             }
-        }
 
-
-        val inten = Intent(context, YourFoodActivity::class.java)
-        val bundle = arguments
-        if (bundle?.getString("login google") == "login google") {
-            val currentUser = mAuth.currentUser
-            val currentUserDb = databaseReference?.child(currentUser?.uid!!)
-            currentUserDb?.child("name")?.setValue(currentUser?.displayName)
-
-            currentUserDb?.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val usid = "" + snapshot.child("useridReal").value.toString()
-                    if (usid != "null") {
-                        inten.putExtra("uid", usid)
-                        Log.v("usid", usid)
-                    } else {
-                        Log.v("sửa uid", "true")
-                        databaseReference?.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if (usid == "null") {
-                                    val countUser = snapshot.childrenCount
-                                    currentUserDb.child("useridReal").setValue(countUser)
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.v("Lỗi không thêm id user", "Lỗi không thêm id user")
-                            }
-                        })
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.v("error", error.message)
-                }
-
-            })
-            name.text = currentUser?.displayName
-            email.text = currentUser?.email
-            Picasso.get().load(currentUser?.photoUrl).into(img)
-
-        } else {
-            val user = mAuth.currentUser
-            val userref = databaseReference?.child(user?.uid!!)
-            email.text = user?.email
-            userref?.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    name.text = snapshot.child("name").value.toString()
-                    val usid = "" + snapshot.child("useridReal").value.toString()
-                    if (usid != "null") {
-                        inten.putExtra("uid", usid)
-                        Log.v("usid", usid)
-                    } else {
-                        Log.v("sửa uid", "true")
-                        databaseReference?.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if(usid == "null"){
-                                    val countUser = snapshot.childrenCount
-                                    userref.child("useridReal").setValue(countUser)
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.v("Lỗi không thêm id user", "Lỗi không thêm id user")
-                            }
-                        })
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
         }
 
         btn.setOnClickListener {

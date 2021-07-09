@@ -198,8 +198,6 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 override fun onCancelled(error: DatabaseError) {
                     Log.v("error", error.message)
                 }
-
-
             })
 
         listdata = ArrayList()
