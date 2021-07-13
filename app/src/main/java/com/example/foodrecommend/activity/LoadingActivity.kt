@@ -56,6 +56,6 @@ class LoadingActivity : AppCompatActivity() {
 
                     })
             }
-        }, 2000)
+        }, 100)
     }
 }

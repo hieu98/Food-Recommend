@@ -17,14 +17,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
     private var databaseReference: DatabaseReference? = null
     var database: FirebaseDatabase? = null
-    var serverResponseCode = 0
 
     private val fragment1: Fragment = HomeFragment()
     private val fragment2: Fragment = AddFragment()
     private val fragment3: Fragment = UserFragment()
     private var active = fragment1
-
-    var callback: ((String) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,9 +70,9 @@ class MainActivity : AppCompatActivity() {
 
         val checkLoginGG = intent.getBooleanExtra("login google", false)
 
-        if (checkLoginGG){
+        if (checkLoginGG) {
             val bundle = Bundle()
-            bundle.putString("login google","login google")
+            bundle.putString("login google", "login google")
             fragment3.arguments = bundle
         }
 

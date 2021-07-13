@@ -67,9 +67,6 @@ class DanhSachApdater(
             }
 
         })
-//        holder.thoigian.text = item.thoigian
-//        holder.thoitiet.text = item.thoitiet
-
 
     }
 
@@ -99,8 +96,6 @@ class DanhSachApdater(
                 listener.OnItemClick(position)
             }
         }
-//        val thoigian = view.findViewById<TextView>(R.id.txtthoigian_dsct)
-//        val thoitiet = view.findViewById<TextView>(R.id.txtthoitiet_dsct)
     }
 
     interface OnItemClickListener {

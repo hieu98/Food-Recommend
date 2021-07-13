@@ -66,17 +66,14 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
     private var mLastLocation: Location? = null
     private lateinit var myWeatherViewModel: WeatherViewModel
     private lateinit var pref: SharedPreferences
-    private lateinit var cout : CountDownTimer
-    private var job : Job? = null
+    private lateinit var cout: CountDownTimer
+    private var job: Job? = null
 
     companion object {
         val key = "6a0dc7a1149d4ec68f1a4f3a67e2d318"
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
+    @DelicateCoroutinesApi
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -90,7 +87,8 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         storage = FirebaseStorage.getInstance()
         storageReference = storage!!.reference
         databaseReference = database?.reference
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        mFusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
 
         var arraydata: List<Int>?
 
@@ -108,12 +106,12 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
 
         val listgoiy = view.findViewById<RecyclerView>(R.id.listgoiy)
         val listmonmoi = view.findViewById<RecyclerView>(R.id.listmonmoi)
-        cout = object : CountDownTimer(18000000,1000){
+        cout = object : CountDownTimer(18000000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
             }
 
             override fun onFinish() {
-                checkPermission(temperature!!,textweather!!, imgweather!!)
+                checkPermission(temperature!!, textweather!!, imgweather!!)
                 Log.v("cout", "true")
                 cout.start()
             }
@@ -161,7 +159,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                     val formBody =
                         FormBody.Builder().add("uid", realid!!).add("data", dataget).build()
                     val request =
-                        Request.Builder().url("http://192.168.0.101:3000/").post(formBody).build()
+                        Request.Builder().url("http://10.1.41.63:3000/").post(formBody).build()
                     okHttpClient.newCall(request).enqueue(object : Callback {
                         override fun onFailure(call: Call, e: IOException) {
                             activity?.runOnUiThread {
@@ -196,9 +194,11 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                                     LinearLayoutManager.VERTICAL,
                                     false
                                 )
+                                GlobalScope.launch {
+                                    getData(arraydata!!)
+                                    getRate()
+                                }
 
-                                getData(arraydata!!)
-                                getRate()
                                 for (i in arraydata!!.indices) {
                                     Log.v("arraydata $i", arraydata!![i].toString())
                                 }
@@ -221,11 +221,15 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         listmonmoi.isNestedScrollingEnabled = false
         listmonmoi.adapter = recipeAdapter
         listmonmoi.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        getDataOrder()
+        GlobalScope.launch {
+            getDataOrder()
+            delay(1000)
+        }
 
         return view
     }
 
+    @DelicateCoroutinesApi
     @SuppressLint("SetTextI18n")
     override fun onResume() {
         super.onResume()
@@ -233,20 +237,21 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         val textweather = view?.findViewById<TextView>(R.id.txt_thoitiet)
         val imgweather = view?.findViewById<ImageView>(R.id.imgv_tt)
 
-        val temp = pref.getInt("temp" , 0)
+        val temp = pref.getInt("temp", 0)
         val code = pref.getString("code", "")
         val des = pref.getString("des", "")
-        if (temp == 0 && code == "" && des == ""){
-            checkPermission(temperature!!,textweather!!, imgweather!!)
-        }else{
+        if (temp == 0 && code == "" && des == "") {
+            checkPermission(temperature!!, textweather!!, imgweather!!)
+        } else {
             temperature?.text = "$temp°C"
             textweather?.text = des
-            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(imgweather)
+            Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png")
+                .resize(60, 60).into(imgweather)
         }
         cout.start()
     }
 
-    private suspend fun fetchWeather (latitude : Double, longitude : Double) : Weather{
+    private suspend fun fetchWeather(latitude: Double, longitude: Double): Weather {
         return withContext(Dispatchers.IO) {
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://api.weatherbit.io/")
@@ -258,8 +263,8 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
         }
     }
 
-    suspend fun fetchAndShowWeather(latitude : Double, longitude : Double){
-        val weather = fetchWeather(latitude,longitude)
+    suspend fun fetchAndShowWeather(latitude: Double, longitude: Double) {
+        val weather = fetchWeather(latitude, longitude)
         showWeather(weather)
     }
 
@@ -274,7 +279,12 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
 
     }
 
-    private fun checkPermission(texweather : TextView, textDescriptionWeather : TextView, img : ImageView){
+    @DelicateCoroutinesApi
+    private fun checkPermission(
+        texweather: TextView,
+        textDescriptionWeather: TextView,
+        img: ImageView
+    ) {
         val withListener = Dexter.withActivity(activity)
             .withPermissions(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -284,27 +294,42 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 @SuppressLint("MissingPermission", "SetTextI18n")
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     if (p0!!.areAllPermissionsGranted()) {
-                        myWeatherViewModel = ViewModelProviders.of(requireActivity()).get(WeatherViewModel::class.java)
+                        myWeatherViewModel = ViewModelProviders.of(requireActivity())
+                            .get(WeatherViewModel::class.java)
                         mFusedLocationProviderClient!!.lastLocation
                             .addOnCompleteListener(requireActivity()) { task ->
                                 if (task.isSuccessful && task.result != null) {
                                     mLastLocation = task.result
-                                    myWeatherViewModel.getApiWeather(mLastLocation?.latitude!!, mLastLocation?.longitude!!, key)
-                                    myWeatherViewModel.requestWeather.observe(requireActivity(),{
+                                    myWeatherViewModel.getApiWeather(
+                                        mLastLocation?.latitude!!,
+                                        mLastLocation?.longitude!!,
+                                        key
+                                    )
+                                    myWeatherViewModel.requestWeather.observe(requireActivity(), {
                                         it.run {
-                                            val temp = pref.getInt("temp" , 0)
+                                            val temp = pref.getInt("temp", 0)
                                             val codeold = pref.getString("code", "")
                                             val code = this.data[0].weather.icon
                                             job = GlobalScope.launch {
                                                 Log.v("corroo", "true")
-                                                fetchAndShowWeather(mLastLocation?.latitude!!, mLastLocation?.longitude!!)
+                                                fetchAndShowWeather(
+                                                    mLastLocation?.latitude!!,
+                                                    mLastLocation?.longitude!!
+                                                )
                                             }
                                             Log.v("texweather", this.data[0].temp.toString())
-                                            if (temp != this.data[0].temp || codeold != code){
-                                                texweather.text = this.data[0].temp.toString() + "°C"
-                                                weatherDes(this.data[0].weather.code, textDescriptionWeather)
-                                                Picasso.get().load("https://www.weatherbit.io/static/img/icons/$code.png").resize(60,60).into(img)
-                                                pref.edit().putInt("temp",this.data[0].temp ).apply()
+                                            if (temp != this.data[0].temp || codeold != code) {
+                                                texweather.text =
+                                                    this.data[0].temp.toString() + "°C"
+                                                weatherDes(
+                                                    this.data[0].weather.code,
+                                                    textDescriptionWeather
+                                                )
+                                                Picasso.get()
+                                                    .load("https://www.weatherbit.io/static/img/icons/$code.png")
+                                                    .resize(60, 60).into(img)
+                                                pref.edit().putInt("temp", this.data[0].temp)
+                                                    .apply()
                                                 pref.edit().putString("code", code).apply()
                                             }
                                         }
@@ -326,7 +351,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
             }).check()
     }
 
-    private fun getData(arraydata: List<Int>) {
+    fun getData(arraydata: List<Int>) {
         var userId: String
         var ten: String
         var nguoidang: String
@@ -409,7 +434,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
             })
     }
 
-    private fun getRate() {
+    fun getRate() {
         var userId: String
         var itemId: String
         var rate: String
@@ -450,8 +475,8 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
     }
 
     @SuppressLint("SetTextI18n")
-    private fun weatherDes(code : Int, text : TextView){
-        when (code){
+    private fun weatherDes(code: Int, text: TextView) {
+        when (code) {
             200 -> {
                 val a = "Có giông kèm mưa nhẹ"
                 text.text = a
@@ -469,7 +494,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 pref.edit().putString("des", a).apply()
             }
             230 -> {
-                val a ="Bão có mưa phùn nhẹ"
+                val a = "Bão có mưa phùn nhẹ"
                 text.text = a
                 pref.edit().putString("des", a).apply()
             }
@@ -504,11 +529,11 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 pref.edit().putString("des", a).apply()
             }
             500 -> {
-                val a ="Mưa nhỏ"
+                val a = "Mưa nhỏ"
                 text.text = a
                 pref.edit().putString("des", a).apply()
             }
-            501-> {
+            501 -> {
                 val a = "Mưa vừa phải"
                 text.text = a
                 pref.edit().putString("des", a).apply()
@@ -524,7 +549,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 pref.edit().putString("des", a).apply()
             }
             520 -> {
-                val a ="Mưa rào nhẹ"
+                val a = "Mưa rào nhẹ"
                 text.text = a
                 pref.edit().putString("des", a).apply()
             }
@@ -614,7 +639,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                 pref.edit().putString("des", a).apply()
             }
             800 -> {
-                val a =  "Bầu trời quang đãng"
+                val a = "Bầu trời quang đãng"
                 text.text = a
                 pref.edit().putString("des", a).apply()
             }

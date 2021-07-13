@@ -65,13 +65,7 @@
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <Button
-                    android:id="@+id/btn_suamon"
-                    android:textAllCaps="false"
-                    android:text="@string/sua_mon"
-                    android:layout_marginStart="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+
                 <Button
                     android:textAllCaps="false"
                     android:id="@+id/btn_xoamon"

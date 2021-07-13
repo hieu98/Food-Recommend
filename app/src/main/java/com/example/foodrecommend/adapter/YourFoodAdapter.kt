@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
-import com.example.foodrecommend.activity.FixRecipeActivity
 import com.example.foodrecommend.activity.LoadingActivity
 import com.example.foodrecommend.data.CongThuc
 import com.example.foodrecommend.data.Rate
@@ -49,12 +48,6 @@ class YourFoodAdapter(
         holder.tenmon.text = item.ten
         holder.nguoidang.text = item.nguoidang
 
-        holder.btnsua.setOnClickListener {
-            val intent = Intent(context, FixRecipeActivity::class.java)
-            intent.putExtra("congthucold",item)
-            context.startActivity(intent)
-        }
-
         holder.btnxoa.setOnClickListener {
             showDialog()
             databaseReference?.addValueEventListener(object : ValueEventListener {
@@ -89,7 +82,6 @@ class YourFoodAdapter(
         val tenmon = view.findViewById<TextView>(R.id.txttenmon_dsct)
         val nguoidang = view.findViewById<TextView>(R.id.txtnguoidang_dsct)
         val btnxoa = view.findViewById<Button>(R.id.btn_xoamon)
-        val btnsua = view.findViewById<Button>(R.id.btn_suamon)
 
         init {
             view.setOnClickListener(this)

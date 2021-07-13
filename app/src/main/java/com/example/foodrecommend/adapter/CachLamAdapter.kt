@@ -10,11 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foodrecommend.R
 import com.example.foodrecommend.data.CachLam
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class CachLamAdapter(var list: List<CachLam>, var context: Context) : RecyclerView.Adapter<CachLamAdapter.ViewHolder>(){
+class CachLamAdapter(var list: List<CachLam>, var context: Context) :
+    RecyclerView.Adapter<CachLamAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_show_cachlam,parent,false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_show_cachlam, parent, false)
         return ViewHolder(view)
     }
 
@@ -22,7 +26,7 @@ class CachLamAdapter(var list: List<CachLam>, var context: Context) : RecyclerVi
         val item = list[position]
         holder.stt.text = item.stt
         holder.cachlam.text = item.buoc
-        Picasso.get().load(item.imageBuoc).resize(150,150).into(holder.imgcachlam)
+        Picasso.get().load(item.imageBuoc).resize(150, 150).into(holder.imgcachlam)
     }
 
     override fun getItemId(position: Int): Long {

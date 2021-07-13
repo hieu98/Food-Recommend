@@ -17,7 +17,7 @@
         android:layout_width="170dp"
         android:layout_height="170dp"
         android:layout_marginTop="50dp"
-        android:src="@drawable/comtam"
+        android:src="@drawable/man"
         android:scaleType="centerCrop"/>
     <TextView
         android:id="@+id/name"

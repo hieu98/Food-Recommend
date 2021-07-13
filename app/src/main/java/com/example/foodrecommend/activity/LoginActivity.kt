@@ -20,11 +20,11 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
-    companion object{
+    companion object {
         private const val RC_SIGN_IN = 120
     }
 
-    private lateinit var mAuth :FirebaseAuth
+    private lateinit var mAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,28 +58,32 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun login(){
-        cirLoginButton.setOnClickListener{
-            if (TextUtils.isEmpty(editTextEmail.text.toString())){
+    private fun login() {
+        cirLoginButton.setOnClickListener {
+            if (TextUtils.isEmpty(editTextEmail.text.toString())) {
                 editTextEmail.error = "Please enter Name"
                 return@setOnClickListener
-            }else if (TextUtils.isEmpty(editTextPassword.text.toString())){
+            } else if (TextUtils.isEmpty(editTextPassword.text.toString())) {
                 editTextPassword.error = "Please enter Email"
                 return@setOnClickListener
             }
-            mAuth.signInWithEmailAndPassword(editTextEmail.text.toString(),editTextPassword.text.toString())
-                .addOnCompleteListener{
-                    if (it.isSuccessful){
+            mAuth.signInWithEmailAndPassword(
+                editTextEmail.text.toString(),
+                editTextPassword.text.toString()
+            )
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
                         startActivity(Intent(this, LoadingActivity::class.java))
                         finish()
-                    }else{
-                        Toast.makeText(this,"Login failed, please try again !", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this, "Login failed, please try again !", Toast.LENGTH_LONG)
+                            .show()
                     }
                 }
         }
     }
 
-    fun onLoginClick(view: View){
+    fun onLoginClick(view: View) {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
         overridePendingTransition(R.anim.slide_in_right, R.anim.stay)
@@ -92,7 +96,7 @@ class LoginActivity : AppCompatActivity() {
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val exception = task.exception
-            if (task.isSuccessful){
+            if (task.isSuccessful) {
                 try {
                     // Google Sign In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
@@ -102,8 +106,8 @@ class LoginActivity : AppCompatActivity() {
                     // Google Sign In failed, update UI appropriately
                     Log.w("LoginActivity", "Google sign in failed", e)
                 }
-            }else {
-                Log.w("LoginActivity",exception.toString())
+            } else {
+                Log.w("LoginActivity", exception.toString())
             }
         }
     }
@@ -116,7 +120,7 @@ class LoginActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("LoginActivity", "signInWithCredential:success")
                     val intent = Intent(this, LoadingActivity::class.java)
-                    intent.putExtra("loginGG",true)
+                    intent.putExtra("loginGG", true)
                     startActivity(intent)
                     finish()
                 } else {
