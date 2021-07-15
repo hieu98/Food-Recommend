@@ -275,8 +275,6 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
     override fun onStop() {
         super.onStop()
         cout.cancel()
-        //job?.cancel()
-
     }
 
     @DelicateCoroutinesApi
