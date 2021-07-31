@@ -159,7 +159,7 @@ class HomeFragment : Fragment(), DanhSachApdater.OnItemClickListener,
                     val formBody =
                         FormBody.Builder().add("uid", realid!!).add("data", dataget).build()
                     val request =
-                        Request.Builder().url("http://10.1.41.63:3000/").post(formBody).build()
+                        Request.Builder().url("http://192.168.0.101:3000/").post(formBody).build()
                     okHttpClient.newCall(request).enqueue(object : Callback {
                         override fun onFailure(call: Call, e: IOException) {
                             activity?.runOnUiThread {
